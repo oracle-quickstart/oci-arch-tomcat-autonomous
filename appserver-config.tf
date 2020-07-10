@@ -33,42 +33,11 @@ resource "null_resource" "Webserver1_ConfigMgmt" {
     "cd ~",
     "curl -L -b \"oraclelicense=a\" -O https://download.oracle.com/otn-pub/java/jdk/14.0.1+7/664493ef4a6946b186ff29eb326336a2/jdk-14.0.1_linux-x64_bin.rpm",
     "sudo yum localinstall -y jdk-14.0.1_linux-x64_bin.rpm",
-    "git clone https://github.com/oracle/oracle-db-examples.git"
-    # "mkdir ~/oracle-db-examples/java/jdbc/Tomcat_Servlet/META-INF/"
+    "git clone https://github.com/oracle/oracle-db-examples.git",
+    "sed -i -e s%password.*%password='\"${var.atp_password}\"'% ~/oracle-db-examples/java/jdbc/Tomcat_Servlet/META-INF/context.xml",
+    "sed -i -e s%url.*%url='\"jdbc:oracle:thin:@${var.atp_db_name}_high?TNS_ADMIN=/etc/tomcat/wallet\"'% ~/oracle-db-examples/java/jdbc/Tomcat_Servlet/META-INF/context.xml",
+    "sed -i -e s%/Users/test/apache-tomcat-9.0.0.M17%/usr/share/tomcat% ~/oracle-db-examples/java/jdbc/Tomcat_Servlet/build.xml",
     ]
-  }
-
-provisioner "local-exec" {
-    command = "sed -i -e s@XXXXXXXX@'${random_string.wallet_password.result}'@ context.xml"
-  }
-
-  provisioner "file" {
-    connection {
-      type        = "ssh"
-      user        = "opc"
-      host        = data.oci_core_vnic.webserver1_primaryvnic.public_ip_address
-      private_key = file(var.ssh_private_key)
-      script_path = "/home/opc/myssh.sh"
-      agent       = false
-      timeout     = "10m"
-    }
-    source      = "context.xml"
-    destination = "~/oracle-db-examples/java/jdbc/Tomcat_Servlet/META-INF/context.xml"
-  }
-
-  provisioner "file" {
-    connection {
-      type        = "ssh"
-      user        = "opc"
-      host        = data.oci_core_vnic.webserver1_primaryvnic.public_ip_address
-      private_key = file(var.ssh_private_key)
-      script_path = "/home/opc/myssh.sh"
-      agent       = false
-      timeout     = "10m"
-    }
-    source      = "build.xml"
-    destination = "~/oracle-db-examples/java/jdbc/Tomcat_Servlet/build.xml"
-    # destination = "build.xml"
   }
 
   provisioner "local-exec" {
@@ -114,7 +83,7 @@ provisioner "local-exec" {
 
  }
 
-resource "null_resource" "Webserver1_TOmcat_Build" {
+resource "null_resource" "Webserver1_Tomcat_Build" {
   depends_on = [null_resource.Webserver1_ConfigMgmt]
 
   provisioner "remote-exec" {
@@ -129,7 +98,6 @@ resource "null_resource" "Webserver1_TOmcat_Build" {
     }
     inline = [
       "cd ~/oracle-db-examples/java/jdbc/Tomcat_Servlet",
-      # "cp -fv ~/build.xml ~/oracle-db-examples/java/jdbc/Tomcat_Servlet/build.xml",
       "mkdir -p /home/opc/oracle-db-examples/java/jdbc/Tomcat_Servlet/WEB-INF/lib",
       "cp -v ~/ojdbc/* /home/opc/oracle-db-examples/java/jdbc/Tomcat_Servlet/WEB-INF/lib/",
       "ant",
