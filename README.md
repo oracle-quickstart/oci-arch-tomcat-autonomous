@@ -16,8 +16,8 @@ and [setup guide](https://www.terraform.io/docs/providers/oci/guides/version-3-u
 ## Clone the Module
 Now, you'll want a local copy of this repo. You can make that with the commands:
 
-    git clone https://github.com/oracle-quickstart/oci-arch-hub-spoke.git
-    cd oci-arch-hub-spoke
+    git clone https://github.com/oracle-quickstart/oci-arch-tomcat-autonomous.git
+    cd oci-arch-tomcat-autonomous
     ls
 
 ## Prerequisites
