@@ -86,8 +86,8 @@ resource "oci_core_network_security_group_security_rule" "ATPSecurityIngressGrou
     source_type = "CIDR_BLOCK"
     tcp_options {
         destination_port_range {
-            max = 1521
-            min = 1521
+            max = 1522
+            min = 1522
         }
     }
 }

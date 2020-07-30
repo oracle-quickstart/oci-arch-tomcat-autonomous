@@ -48,13 +48,3 @@ resource "oci_load_balancer_backend" "lb_be_webserver1" {
   weight           = 1
 }
 
-# resource "oci_load_balancer_backend" "lb_be_app01" {
-#   load_balancer_id = oci_load_balancer.lb01.id
-#   backendset_name  = oci_load_balancer_backend_set.lb_be_app01.name
-#   ip_address       = oci_core_instance.webserver1.private_ip
-#   port             = 5000
-#   backup           = false
-#   drain            = false
-#   offline          = false
-#   weight           = 1
-# }

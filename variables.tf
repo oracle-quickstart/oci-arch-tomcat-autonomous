@@ -91,5 +91,6 @@ variable "InstanceImageOCID" {
 
 variable "ATP_tde_wallet_zip_file" {default = "tde_wallet_ATPdb1.zip"}
 
-variable "atp_password" { default = "1qaz2wsx##EDC"}
-variable "atp_db_name" { default = "dbtomcat"} 
+variable "atp_password" {}
+variable "atp_db_name" {}
+variable "atp_name" {} 

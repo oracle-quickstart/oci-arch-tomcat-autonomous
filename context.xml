@@ -11,6 +11,6 @@
    initialPoolSize="15"
    user="admin"
    password=XXXXX
-   url="jdbc:oracle:thin:@XXXXX?TNS_ADMIN=/etc/tomcat/wallet"
+   url="jdbc:oracle:thin:@YYYYY?TNS_ADMIN=/etc/tomcat/wallet"
 />
 </Context>

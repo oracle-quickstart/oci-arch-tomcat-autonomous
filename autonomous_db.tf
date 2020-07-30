@@ -9,7 +9,7 @@ resource "oci_database_autonomous_database" "ATPdatabase" {
     db_name = var.atp_db_name
     # data_safe_status = var.autonomous_database_data_safe_status
     # db_workload = var.autonomous_database_db_workload
-    display_name = "tomcat"
+    display_name = var.atp_name
     is_auto_scaling_enabled = false
     # license_model = var.autonomous_database_license_model
     nsg_ids = [oci_core_network_security_group.ATPSecurityGroup.id]
