@@ -58,6 +58,6 @@ When you no longer need the deployment, you can run this command to destroy it:
 ![](./images/architecture-deploy-tomcat.png)
 
 
-## Reference Archirecture
+## Reference Architecture
 
-- [Deploy Apache Tomcat connected to an autonomous database](https://docs.us.oracle.com/en/solutions/deploy-tomcat-adb/index.html)
+- [Deploy Apache Tomcat connected to an autonomous database](https://docs.oracle.com/en/solutions/deploy-tomcat-adb)
