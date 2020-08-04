@@ -48,12 +48,23 @@ Deploy:
     terraform plan
     terraform apply
 
+## Testing your deploymnet
+
+After the deployment is finished, you can test that your tomcat was deployed correctly and can access the database going to the urls:
+
+````
+http://<load balancer IP>/JDBCSample/JDBCSample_Servlet
+
+http://<load balancer IP>/JDBCSample/UCPServlet
+
+`````
+
 ## Destroy the Deployment
 When you no longer need the deployment, you can run this command to destroy it:
 
     terraform destroy
 
-## Hub spoke Architecture
+## Tomcat-Autonomous Database Architecture
 
 ![](./images/architecture-deploy-tomcat.png)
 
