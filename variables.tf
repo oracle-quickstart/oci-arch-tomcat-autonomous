@@ -55,10 +55,6 @@ variable "use_existing_network" {
   default = false
 }
 
-
-
-
-
 # OS Images
 variable "instance_os" {
   description = "Operating system for compute instances"
@@ -67,29 +63,19 @@ variable "instance_os" {
 
 variable "linux_os_version" {
   description = "Operating system version for all Linux instances"
-  default     = "7.7"
-}
-
-# Defines the number of instances to deploy
-variable "NumInstances" {
-    default = "1"
+  default     = "7.8"
 }
 
 variable "InstanceShape" {
     default = "VM.Standard2.1"
 }
 
-variable "InstanceImageOCID" {
-    type = map(string)
-    default = {
-        // See https://docs.cloud.oracle.com/images/
-        // Oracle-provided image "Oracle-Autonomous-Linux-7.7-2020.01-0"
-        us-ashburn-1 = "ocid1.image.oc1.iad.aaaaaaaasrjyeax4sznb3jxnamxrjpgiw2ked3isrmj6ktu44uso4mln7dua"
-        us-phoenix-1 = "ocid1.image.oc1.phx.aaaaaaaaioy3pwjguhyxmp7gmfp534hmz27o7yfdt4b23qgs7ypr52k3zk5q"
-    }
+variable "OsImage" {
+   default = "Oracle-Linux-7.8-2020.05.26-0"
 }
-
 variable "ATP_tde_wallet_zip_file" {default = "tde_wallet_ATPdb1.zip"}
+
+variable "numberOfNodes" {default = 2}
 
 variable "atp_password" {}
 variable "atp_db_name" {}

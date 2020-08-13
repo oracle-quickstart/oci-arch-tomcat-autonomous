@@ -3,12 +3,12 @@
 
 resource "null_resource" "Webserver1_ConfigMgmt" {
   depends_on = [oci_core_instance.webserver1, oci_database_autonomous_database.ATPdatabase]
-
+  count = var.numberOfNodes
   provisioner "remote-exec" {
     connection {
       type        = "ssh"
       user        = "opc"
-      host        = data.oci_core_vnic.webserver1_primaryvnic.public_ip_address
+      host        = data.oci_core_vnic.webserver1_primaryvnic[count.index].public_ip_address
       private_key = file(var.ssh_private_key)
       script_path = "/home/opc/myssh.sh"
       agent       = false
@@ -51,7 +51,7 @@ resource "null_resource" "Webserver1_ConfigMgmt" {
     connection {
       type        = "ssh"
       user        = "opc"
-      host        = data.oci_core_vnic.webserver1_primaryvnic.public_ip_address
+      host        = data.oci_core_vnic.webserver1_primaryvnic[count.index].public_ip_address
       private_key = file(var.ssh_private_key)
       script_path = "/home/opc/myssh.sh"
       agent       = false
@@ -65,7 +65,7 @@ resource "null_resource" "Webserver1_ConfigMgmt" {
     connection {
       type        = "ssh"
       user        = "opc"
-      host        = data.oci_core_vnic.webserver1_primaryvnic.public_ip_address
+      host        = data.oci_core_vnic.webserver1_primaryvnic[count.index].public_ip_address
       private_key = file(var.ssh_private_key)
       script_path = "/home/opc/myssh.sh"
       agent       = false
@@ -79,7 +79,7 @@ resource "null_resource" "Webserver1_ConfigMgmt" {
     connection {
       type        = "ssh"
       user        = "opc"
-      host        = data.oci_core_vnic.webserver1_primaryvnic.public_ip_address
+      host        = data.oci_core_vnic.webserver1_primaryvnic[count.index].public_ip_address
       private_key = file(var.ssh_private_key)
       script_path = "/home/opc/myssh.sh"
       agent       = false
@@ -94,12 +94,12 @@ resource "null_resource" "Webserver1_ConfigMgmt" {
 
 resource "null_resource" "Webserver1_Tomcat_Build" {
   depends_on = [null_resource.Webserver1_ConfigMgmt]
-
+  count = var.numberOfNodes
   provisioner "remote-exec" {
     connection {
       type        = "ssh"
       user        = "opc"
-      host        = data.oci_core_vnic.webserver1_primaryvnic.public_ip_address
+      host        = data.oci_core_vnic.webserver1_primaryvnic[count.index].public_ip_address
       private_key = file(var.ssh_private_key)
       script_path = "/home/opc/myssh.sh"
       agent       = false
