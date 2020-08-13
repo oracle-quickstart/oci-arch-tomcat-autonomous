@@ -68,6 +68,8 @@ When you no longer need the deployment, you can run this command to destroy it:
 
 ![](./images/architecture-deploy-tomcat.png)
 
+Although the diagram shows a private subnet for the Tomcat servers, the scripts are provisioning them on a public subnet as there is no bastion to allow access to the servers.
+
 
 ## Reference Architecture
 
