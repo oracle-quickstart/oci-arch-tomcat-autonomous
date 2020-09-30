@@ -25,10 +25,11 @@ resource "null_resource" "Webserver1_ConfigMgmt" {
     "sudo yum install -y ant",
     "cd ~",
     "curl -LO -H 'Cookie: oraclelicense=accept-securebackup-cookie' -O https://download.oracle.com/otn-pub/otn_software/jdbc/ojdbc8-full.tar.gz",
+    # untar the JDBC driver in the common lib folder
     "sudo tar -xvf ojdbc8-full.tar.gz --strip 1 -C /usr/share/java/tomcat/",
     # this jar conflicts with the driver in same cases
     "sudo rm -f /usr/share/java/tomcat/xmlparserv2.jar",
-    # other missing jar
+    # missing jar to create connection with older jdk
     "sudo wget -O /usr/share/java/tomcat/tomcat-dbcp-7.0.76.jar http://search.maven.org/remotecontent?filepath=org/apache/tomcat/tomcat-dbcp/7.0.76/tomcat-dbcp-7.0.76.jar",
     "sudo firewall-cmd --add-port=8080/tcp --permanent",
     "sudo firewall-cmd --reload",
@@ -119,7 +120,6 @@ resource "null_resource" "Webserver1_Tomcat_Build" {
       "sed -i -e 's@jdbc/orcljdbc_ds@tomcat/UCP_atp@' ~/oracle-db-examples/java/jdbc/Tomcat_Servlet/src/JDBCSample_Servlet.java",
       "cd ~/oracle-db-examples/java/jdbc/Tomcat_Servlet",
       "mkdir -p /home/opc/oracle-db-examples/java/jdbc/Tomcat_Servlet/WEB-INF/lib",
-      # "cp -v ~/ojdbc8-full/* /home/opc/oracle-db-examples/java/jdbc/Tomcat_Servlet/WEB-INF/lib/",
       "ant",
       "sudo cp /home/opc/oracle-db-examples/java/jdbc/Tomcat_Servlet/dist/JDBCSample.war /usr/share/tomcat/webapps/",
       "sudo systemctl restart tomcat"
