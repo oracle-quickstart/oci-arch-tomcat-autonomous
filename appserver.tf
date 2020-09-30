@@ -10,7 +10,7 @@ resource "oci_core_instance" "webserver1" {
   count = var.numberOfNodes
   availability_domain = data.oci_identity_availability_domains.ADs.availability_domains[1]["name"]
   compartment_id = var.compartment_ocid
-  display_name = "tomcat01"
+  display_name = "tomcat-${count.index}"
   shape = var.InstanceShape
 
   create_vnic_details {
@@ -28,6 +28,7 @@ resource "oci_core_instance" "webserver1" {
 
   metadata = {
     ssh_authorized_keys = var.ssh_public_key
+    user_data = data.template_cloudinit_config.app_server_cloud_init.rendered
   }
   # timeouts {
   #   create = "60m"

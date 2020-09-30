@@ -1,5 +1,9 @@
 # Copyright (c) 2020, Oracle and/or its affiliates. 
 # All rights reserved. The Universal Permissive License (UPL), Version 1.0 as shown at http://oss.oracle.com/licenses/upl
+resource "tls_private_key" "opc_key" {
+  algorithm = "RSA"
+  rsa_bits  = 4096
+}
 
 resource "null_resource" "Webserver1_ConfigMgmt" {
   depends_on = [oci_core_instance.webserver1, oci_database_autonomous_database.ATPdatabase]
@@ -9,7 +13,7 @@ resource "null_resource" "Webserver1_ConfigMgmt" {
       type        = "ssh"
       user        = "opc"
       host        = data.oci_core_vnic.webserver1_primaryvnic[count.index].public_ip_address
-      private_key = file(var.ssh_private_key)
+      private_key = tls_private_key.opc_key.private_key_pem
       script_path = "/home/opc/myssh.sh"
       agent       = false
       timeout     = "10m"
@@ -21,7 +25,12 @@ resource "null_resource" "Webserver1_ConfigMgmt" {
     "sudo yum install -y ant",
     "cd ~",
     "curl -LO -H 'Cookie: oraclelicense=accept-securebackup-cookie' -O https://download.oracle.com/otn-pub/otn_software/jdbc/ojdbc8-full.tar.gz",
-    "tar zxf ojdbc8-full.tar.gz",
+    # untar the JDBC driver in the common lib folder
+    "sudo tar -xvf ojdbc8-full.tar.gz --strip 1 -C /usr/share/java/tomcat/",
+    # this jar conflicts with the driver in same cases
+    "sudo rm -f /usr/share/java/tomcat/xmlparserv2.jar",
+    # missing jar to create connection with older jdk
+    "sudo wget -O /usr/share/java/tomcat/tomcat-dbcp-7.0.76.jar http://search.maven.org/remotecontent?filepath=org/apache/tomcat/tomcat-dbcp/7.0.76/tomcat-dbcp-7.0.76.jar",
     "sudo firewall-cmd --add-port=8080/tcp --permanent",
     "sudo firewall-cmd --reload",
     "sudo systemctl enable --now tomcat",
@@ -52,7 +61,7 @@ resource "null_resource" "Webserver1_ConfigMgmt" {
       type        = "ssh"
       user        = "opc"
       host        = data.oci_core_vnic.webserver1_primaryvnic[count.index].public_ip_address
-      private_key = file(var.ssh_private_key)
+      private_key = tls_private_key.opc_key.private_key_pem
       script_path = "/home/opc/myssh.sh"
       agent       = false
       timeout     = "10m"
@@ -66,7 +75,7 @@ resource "null_resource" "Webserver1_ConfigMgmt" {
       type        = "ssh"
       user        = "opc"
       host        = data.oci_core_vnic.webserver1_primaryvnic[count.index].public_ip_address
-      private_key = file(var.ssh_private_key)
+      private_key = tls_private_key.opc_key.private_key_pem
       script_path = "/home/opc/myssh.sh"
       agent       = false
       timeout     = "10m"
@@ -80,7 +89,7 @@ resource "null_resource" "Webserver1_ConfigMgmt" {
       type        = "ssh"
       user        = "opc"
       host        = data.oci_core_vnic.webserver1_primaryvnic[count.index].public_ip_address
-      private_key = file(var.ssh_private_key)
+      private_key = tls_private_key.opc_key.private_key_pem
       script_path = "/home/opc/myssh.sh"
       agent       = false
       timeout     = "10m"
@@ -100,7 +109,7 @@ resource "null_resource" "Webserver1_Tomcat_Build" {
       type        = "ssh"
       user        = "opc"
       host        = data.oci_core_vnic.webserver1_primaryvnic[count.index].public_ip_address
-      private_key = file(var.ssh_private_key)
+      private_key = tls_private_key.opc_key.private_key_pem
       script_path = "/home/opc/myssh.sh"
       agent       = false
       timeout     = "10m"
@@ -111,7 +120,6 @@ resource "null_resource" "Webserver1_Tomcat_Build" {
       "sed -i -e 's@jdbc/orcljdbc_ds@tomcat/UCP_atp@' ~/oracle-db-examples/java/jdbc/Tomcat_Servlet/src/JDBCSample_Servlet.java",
       "cd ~/oracle-db-examples/java/jdbc/Tomcat_Servlet",
       "mkdir -p /home/opc/oracle-db-examples/java/jdbc/Tomcat_Servlet/WEB-INF/lib",
-      "cp -v ~/ojdbc8-full/* /home/opc/oracle-db-examples/java/jdbc/Tomcat_Servlet/WEB-INF/lib/",
       "ant",
       "sudo cp /home/opc/oracle-db-examples/java/jdbc/Tomcat_Servlet/dist/JDBCSample.war /usr/share/tomcat/webapps/",
       "sudo systemctl restart tomcat"
