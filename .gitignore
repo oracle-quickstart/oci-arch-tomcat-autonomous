@@ -7,5 +7,4 @@
 .DS_Store
 output.tf
 test.zip
-temp*
 tde*.*
