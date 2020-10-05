@@ -22,14 +22,20 @@ Now, you'll want a local copy of this repo. You can make that with the commands:
 ## Prerequisites
 First off, you'll need to do some pre-deploy setup.  That's all detailed [here](https://github.com/cloud-partners/oci-prerequisites).
 
+Setup TF_VAR_... to setup your environment
+
+```
+export TF_VAR_user_ocid=ocid1.user.oc1...
+export TF_VAR_fingerprint=xx:xx:xx:xx:xx:xx:xx:xx:xx:xx:xx:xx:xx:xx:xx:xx
+export TF_VAR_private_key_path=/path/to/private.key.pem
+export TF_VAR_tenancy_ocid=ocid1.tenancy.oc1...
+```
+
 Secondly, create a `terraform.tfvars` file and populate with the following information:
 
 ```
 # Authentication
 tenancy_ocid         = "<tenancy_ocid>"
-user_ocid            = "<user_ocid>"
-fingerprint          = "<finger_print>"
-private_key_path     = "<pem_private_key_path>"
 
 # SSH Keys
 ssh_public_key  = "<public_ssh_key_path>"
