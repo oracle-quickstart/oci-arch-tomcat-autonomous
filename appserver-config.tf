@@ -6,20 +6,19 @@ resource "tls_private_key" "opc_key" {
 }
 
 resource "null_resource" "Webserver1_ConfigMgmt" {
-  depends_on = [oci_core_instance.webserver1, oci_database_autonomous_database.ATPdatabase]
+  depends_on = [oci_core_instance.webserver, oci_database_autonomous_database.ATPdatabase]
   count = var.numberOfNodes
   provisioner "remote-exec" {
     connection {
       type        = "ssh"
       user        = "opc"
-      host        = data.oci_core_vnic.webserver1_primaryvnic[count.index].public_ip_address
+      host        = oci_core_instance.webserver[count.index].public_ip
       private_key = tls_private_key.opc_key.private_key_pem
-      script_path = "/home/opc/myssh.sh"
       agent       = false
       timeout     = "10m"
     }
     inline = [
-    "sudo yum update -y",
+    # "sudo yum update -y",
     "sudo yum install -y tomcat",
     "sudo yum install -y git",
     "sudo yum install -y ant",
@@ -60,9 +59,8 @@ resource "null_resource" "Webserver1_ConfigMgmt" {
     connection {
       type        = "ssh"
       user        = "opc"
-      host        = data.oci_core_vnic.webserver1_primaryvnic[count.index].public_ip_address
+      host        = oci_core_instance.webserver[count.index].public_ip
       private_key = tls_private_key.opc_key.private_key_pem
-      script_path = "/home/opc/myssh.sh"
       agent       = false
       timeout     = "10m"
     }
@@ -74,9 +72,8 @@ resource "null_resource" "Webserver1_ConfigMgmt" {
     connection {
       type        = "ssh"
       user        = "opc"
-      host        = data.oci_core_vnic.webserver1_primaryvnic[count.index].public_ip_address
+      host        = oci_core_instance.webserver[count.index].public_ip
       private_key = tls_private_key.opc_key.private_key_pem
-      script_path = "/home/opc/myssh.sh"
       agent       = false
       timeout     = "10m"
     }
@@ -88,9 +85,8 @@ resource "null_resource" "Webserver1_ConfigMgmt" {
     connection {
       type        = "ssh"
       user        = "opc"
-      host        = data.oci_core_vnic.webserver1_primaryvnic[count.index].public_ip_address
+      host        = oci_core_instance.webserver[count.index].public_ip
       private_key = tls_private_key.opc_key.private_key_pem
-      script_path = "/home/opc/myssh.sh"
       agent       = false
       timeout     = "10m"
     }
@@ -108,9 +104,8 @@ resource "null_resource" "Webserver1_Tomcat_Build" {
     connection {
       type        = "ssh"
       user        = "opc"
-      host        = data.oci_core_vnic.webserver1_primaryvnic[count.index].public_ip_address
+      host        = oci_core_instance.webserver[count.index].public_ip
       private_key = tls_private_key.opc_key.private_key_pem
-      script_path = "/home/opc/myssh.sh"
       agent       = false
       timeout     = "10m"
     }

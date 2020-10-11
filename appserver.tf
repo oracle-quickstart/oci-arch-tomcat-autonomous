@@ -6,7 +6,7 @@ data "oci_core_images" "OSImageLocal" {
   display_name   = var.OsImage
 }
 
-resource "oci_core_instance" "webserver1" {
+resource "oci_core_instance" "webserver" {
   count = var.numberOfNodes
   availability_domain = data.oci_identity_availability_domains.ADs.availability_domains[1]["name"]
   compartment_id = var.compartment_ocid
@@ -35,18 +35,6 @@ resource "oci_core_instance" "webserver1" {
   # }
 }
 
-data "oci_core_vnic_attachments" "webserver1_primaryvnic_attach" {
-  count = var.numberOfNodes
-  availability_domain = lookup(data.oci_identity_availability_domains.ADs.availability_domains[1], "name")
-  compartment_id = var.compartment_ocid
-  instance_id         = oci_core_instance.webserver1[count.index].id
-}
-
-data "oci_core_vnic" "webserver1_primaryvnic" {
-  count = var.numberOfNodes
-  vnic_id = data.oci_core_vnic_attachments.webserver1_primaryvnic_attach[count.index].vnic_attachments.0.vnic_id
-}
-
-# output "webserver1_PublicIP" {
-#   value = [data.oci_core_vnic.webserver1_primaryvnic[count.index].public_ip_address]
-# }
+output "Tomcat_PublicIPs" {
+  value = oci_core_instance.webserver[*].public_ip
+} 
