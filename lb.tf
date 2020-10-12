@@ -41,7 +41,7 @@ resource "oci_load_balancer_backend" "lb_be_webserver1" {
   count = var.numberOfNodes
   load_balancer_id = oci_load_balancer.lb01.id
   backendset_name  = oci_load_balancer_backend_set.lb_be_app01.name
-  ip_address       = oci_core_instance.webserver1[count.index].private_ip
+  ip_address       = oci_core_instance.webserver[count.index].private_ip
   port             = 8080
   backup           = false
   drain            = false
@@ -49,3 +49,6 @@ resource "oci_load_balancer_backend" "lb_be_webserver1" {
   weight           = 1
 }
 
+output "LoadBalancerIP" {
+  value = oci_load_balancer.lb01.ip_address_details
+}
