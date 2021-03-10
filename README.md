@@ -79,7 +79,7 @@ Run the following commands:
 
 
 ### Testing your Deployment
-After the deployment is finished, you can test that your Tomcat was deployed correctly and can access the tomcat demo application with MDS as database system. Pick up the value of the todoapp_url:
+After the deployment is finished, you can test that your Tomcat was deployed correctly and can access the tomcat demo application with ATP. Pick up the value of the todoapp_url:
 
 ````
 todoapp_url = http://129.159.65.38/todoapp/list
