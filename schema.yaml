@@ -1,0 +1,321 @@
+## Copyright © 2020, Oracle and/or its affiliates. 
+## All rights reserved. The Universal Permissive License (UPL), Version 1.0 as shown at http://oss.oracle.com/licenses/upl
+
+title: "Create highly available Tomcat setup with web application accessing ATP instance in Oracle Cloud Infrastructure"
+stackDescription: "Deploy highly available Tomcat setup with web application accessing Autonomous Transaction Processing (ATP) instance in Oracle Cloud Infrastructure."
+schemaVersion: 1.1.0
+version: "20190404"
+locale: "en"
+
+variableGroups:
+- title: General Configuration
+  visible: false
+  variables:
+  - tenancy_ocid
+  - region
+
+- title: Required Configuration
+  visible: true  
+  variables:
+  - ATP_password
+  - compartment_ocid
+  - availablity_domain_name 
+
+- title: Optional Configuration
+  visible: true
+  variables:
+  - lb_shape  
+  - igw_display_name
+  - vcn01_cidr_block
+  - vcn01_dns_label
+  - vcn01_display_name
+  - vcn01_subnet_pub01_cidr_block
+  - vcn01_subnet_pub01_display_name
+  - vcn01_subnet_pub02_cidr_block
+  - vcn01_subnet_pub02_display_name  
+  - vcn01_subnet_app01_cidr_block
+  - vcn01_subnet_app01_display_name 
+  - vcn01_subnet_db01_cidr_block
+  - vcn01_subnet_db01_display_name
+  - ATP_database_cpu_core_count
+  - ATP_database_data_storage_size_in_tbs
+  - ATP_database_db_name
+  - ATP_database_db_version
+  - ATP_database_defined_tags_value
+  - ATP_database_display_name
+  - ATP_database_freeform_tags
+  - ATP_database_license_model
+  - ATP_tde_wallet_zip_file
+  - ATP_private_endpoint_label
+  - InstanceShape
+  - instance_os
+  - linux_os_version
+  - release
+
+variables:
+  
+  compartment_ocid:
+    type: oci:identity:compartment:id
+    required: true
+    visibile: true
+    title: Compartment
+    description: "Compartment where you want to create the solution resources"
+
+  region:
+    type: oci:identity:region:name
+    required: true
+    visibile: true
+    title: Region
+    description: "Region where you want to deploy the resources defined by this stack."
+
+  availablity_domain_name:
+    type: oci:identity:availabilitydomain:name
+    required: true
+    visibile: true
+    title: "Availability Domain to be chosen"
+    description: "Availability Domain to be chosen"
+    dependsOn:
+      compartmentId: ${compartment_ocid}
+
+  ATP_password:
+    type: password
+    required: true
+    visibile: true
+    title: "ATP Database Password for ADMIN user."
+    description: "ATP Database Password for ADMIN user."
+    minLength: 12
+    maxLength: 30
+    pattern: ^[A-Za-z][A-Za-z0-9_#\$]+$ 
+ 
+  # Optional Configuration  
+  
+  lb_shape:
+    type: enum
+    title: "LoadBalanacer Shape"
+    description: "Choose LoadBalanacer Shape"
+    default: "100Mbps"
+    required: false 
+    enum:
+      - "100Mbps"
+      - "10Mbps"
+      - "10Mbps-Micro"
+      - "400Mbps"
+      - "8000Mbps"
+
+  igw_display_name:
+    type: string
+    required: false
+    title: "InternetGateway Display Name"
+    description: "Type InternetGateway Display Name."
+    default: "internet-gateway"
+
+  vcn01_cidr_block:
+    type: string
+    required: false
+    pattern: "^(25[0-5]|2[0-4][0-9]|1[0-9][0-9]|[1-9]?[0-9]).(25[0-5]|2[0-4][0-9]|1[0-9][0-9]|[1-9]?[0-9]).(25[0-5]|2[0-4][0-9]|1[0-9][0-9]|[1-9]?[0-9]).(25[0-5]|2[0-4][0-9]|1[0-9][0-9]|[1-9]?[0-9])\\/(3[0-2]|[1-2]?[0-9])$"
+    title: "VCN CIDR Block"
+    description: "Choose CIDR block for your VCN."
+    default: "10.0.0.0/16"
+
+  vcn01_dns_label:
+    type: string
+    required: false
+    title: "VCN DNS Label"
+    description: "Choose DNS Label for your VCN."
+    default: "vcn01"
+
+  vcn01_display_name:
+    type: string
+    required: false
+    title: "VCN Display Name"
+    description: "Choose Display Name for your VCN."
+    default: "vcn01"
+
+  vcn01_subnet_pub01_cidr_block:
+    type: string
+    required: false
+    pattern: "^(25[0-5]|2[0-4][0-9]|1[0-9][0-9]|[1-9]?[0-9]).(25[0-5]|2[0-4][0-9]|1[0-9][0-9]|[1-9]?[0-9]).(25[0-5]|2[0-4][0-9]|1[0-9][0-9]|[1-9]?[0-9]).(25[0-5]|2[0-4][0-9]|1[0-9][0-9]|[1-9]?[0-9])\\/(3[0-2]|[1-2]?[0-9])$"
+    title: "Load Balancer Public Subnet CIDR Block"
+    description: "Choose CIDR block for your Load Balancer Public Subnet."
+    default: "10.0.1.0/24"
+
+  vcn01_subnet_pub01_display_name:
+    type: string
+    required: false
+    title: "Load Balancer Public Subnet Display Name"
+    description: "Choose Display Name for your Load Balancer Public Subnet."
+    default: "vcn01_subnet_pub01"
+
+  vcn01_subnet_pub02_cidr_block:
+    type: string
+    required: false
+    pattern: "^(25[0-5]|2[0-4][0-9]|1[0-9][0-9]|[1-9]?[0-9]).(25[0-5]|2[0-4][0-9]|1[0-9][0-9]|[1-9]?[0-9]).(25[0-5]|2[0-4][0-9]|1[0-9][0-9]|[1-9]?[0-9]).(25[0-5]|2[0-4][0-9]|1[0-9][0-9]|[1-9]?[0-9])\\/(3[0-2]|[1-2]?[0-9])$"
+    title: "Bastion Host Public Subnet CIDR Block"
+    description: "Choose CIDR block for your Bastion Host Public Subnet."
+    default: "10.0.2.0/24"
+
+  vcn01_subnet_pub02_display_name:
+    type: string
+    required: false
+    title: "Bastion Host Public Subnet Display Name"
+    description: "Choose Display Name for your Bastion Host Public Subnet."
+    default: "vcn01_subnet_pub02"
+
+  vcn01_subnet_app01_cidr_block:
+    type: string
+    required: false
+    pattern: "^(25[0-5]|2[0-4][0-9]|1[0-9][0-9]|[1-9]?[0-9]).(25[0-5]|2[0-4][0-9]|1[0-9][0-9]|[1-9]?[0-9]).(25[0-5]|2[0-4][0-9]|1[0-9][0-9]|[1-9]?[0-9]).(25[0-5]|2[0-4][0-9]|1[0-9][0-9]|[1-9]?[0-9])\\/(3[0-2]|[1-2]?[0-9])$"
+    title: "Tomcat Servers Public Subnet CIDR Block"
+    description: "Choose CIDR block for your Tomcat Servers Public Subnet."
+    default: "10.0.10.0/24"
+
+  vcn01_subnet_app01_display_name:
+    type: string
+    required: false
+    title: "Tomcat Servers Public Subnet Display Name"
+    description: "Choose Display Name for your Tomcat Servers Public Subnet."
+    default: "vcn01_subnet_app01"
+
+  vcn01_subnet_db01_cidr_block:
+    type: string
+    required: false
+    pattern: "^(25[0-5]|2[0-4][0-9]|1[0-9][0-9]|[1-9]?[0-9]).(25[0-5]|2[0-4][0-9]|1[0-9][0-9]|[1-9]?[0-9]).(25[0-5]|2[0-4][0-9]|1[0-9][0-9]|[1-9]?[0-9]).(25[0-5]|2[0-4][0-9]|1[0-9][0-9]|[1-9]?[0-9])\\/(3[0-2]|[1-2]?[0-9])$"
+    title: "MDS Private Subnet CIDR Block"
+    description: "Choose CIDR block for your MDS Private Subnet."
+    default: "10.0.20.0/24"
+
+  vcn01_subnet_db01_display_name:
+    type: string
+    required: false
+    title: "MDS Private Subnet Display Name"
+    description: "Choose Display Name for your MDS Private Subnet."
+    default: "vcn01_subnet_db01"
+
+  InstanceShape:
+    type: oci:core:instanceshape:name
+    required: false
+    title: "Instance Shape"
+    description: "A shape is a template that determines the number of CPUs, amount of memory, and other resources allocated to a newly created instance."
+    default: "VM.Standard2.1"
+    dependsOn:
+      compartmentId: ${compartment_ocid}
+  
+  instance_os:
+    type: enum
+    required: false
+    title: "Instance OS"
+    description: "An Operating System that determines the operating system for the instance."
+    default: "Oracle Linux"
+    enum:
+      - "Oracle Linux"
+
+  linux_os_version:
+    type: enum
+    required: false
+    title: "Instance OS version"
+    description: "An Operating System version that determines the operating system version for the instance."
+    default: "7.8"
+    enum:
+      - "7.8"
+      - "7.9"
+
+  ATP_database_cpu_core_count:
+    type: number
+    required: false
+    minimum: 1
+    maximum: 128
+    multipleOf: 1
+    default: 1
+    description: "ATP Database CPU Core Count"
+
+  ATP_database_data_storage_size_in_tbs:
+    type: number
+    required: false
+    minimum: 1
+    maximum: 128
+    multipleOf: 1
+    default: 1
+    description: "ATP Database Data Storage Size in terabytes"
+
+  ATP_database_db_name:
+    type: string
+    required: false
+    default: "atpdb1"
+    description: "ATP Database DBNAME"
+
+  ATP_database_db_version:
+    type: enum
+    required: false
+    default: "19c"
+    description: "ATP Database Version"
+    enum:
+      - "19c"
+
+  ATP_database_display_name:
+    type: string
+    required: false
+    default: "ATPDB"
+    description: "ATP Database Display Name"
+
+  ATP_database_license_model:
+    type: enum
+    required: false
+    default: "LICENSE_INCLUDED"
+    description: "ATP Database License Model"
+    enum:
+      - "LICENSE_INCLUDED"
+      - "BRING_YOUR_OWN_LICENSE"
+
+  ATP_tde_wallet_zip_file:
+    type: string
+    required: false
+    default: "tde_wallet_ATPdb1.zip"
+    description: "ATP Database TDE Wallet ZIP File"
+      
+  ATP_private_endpoint_label:
+    type: string
+    required: false
+    default: "ATPPrivateEndpoint"
+    description: "ATP Database Private Endpoint Label"
+
+  ATP_database_freeform_tags:
+    type: string
+    required: false
+    description: "ATP Database Freeform Tags"
+
+  ATP_database_defined_tags_value:
+    type: string
+    required: false
+    description: "ATP Database Defined Tags"
+
+outputs:
+
+  generated_ssh_private_key:
+    title: "Generated SSH Private Key"
+    displayText: "Generated SSH Private Key"
+    type: copyableString
+    visible: true
+
+  todoapp_url:
+    title: "TODO App URL"
+    displayText: "TODO App URL"
+    type: copyableString
+    visible: true
+
+  bastion_public_ip:
+    title: "Bastion Host Public IP"
+    displayText: "Bastion Host Public IP"
+    type: string
+    visible: true
+
+  tomcat-server1_private_ip:
+    title: "Tomcat Server1 Private IP"
+    displayText: "Tomcat Server1 Private IP"
+    type: string
+    visible: true
+
+  tomcat-server2_private_ip:
+    title: "Tomcat Server2 Private IP"
+    displayText: "Tomcat Server2 Private IP"
+    type: string
+    visible: true

@@ -1,10 +1,19 @@
 ## Copyright © 2020, Oracle and/or its affiliates. 
 ## All rights reserved. The Universal Permissive License (UPL), Version 1.0 as shown at http://oss.oracle.com/licenses/upl
 
+variable "release" {
+  description = "Reference Architecture Release (OCI Architecture Center)"
+  default     = "1.0"
+}
+
 variable "tenancy_ocid" {}
 variable "region" {}
 variable "compartment_ocid" {}
-variable "ssh_public_key" {}
+variable "fingerprint" {}
+variable "user_ocid" {}
+variable "private_key_path" {}
+variable "availablity_domain_name" {}
+variable "ATP_password" {}
 
 variable "igw_display_name" {
   default = "internet-gateway"
@@ -21,15 +30,23 @@ variable "vcn01_display_name" {
 }
 
 variable "vcn01_subnet_pub01_cidr_block" {
-  default = "10.0.0.0/24"
+  default = "10.0.1.0/24"
 }
 
 variable "vcn01_subnet_pub01_display_name" {
   default = "vcn01_subnet_pub01"
 }
 
+variable "vcn01_subnet_pub02_cidr_block" {
+  default = "10.0.2.0/24"
+}
+
+variable "vcn01_subnet_pub02_display_name" {
+  default = "vcn01_subnet_pub02"
+}
+
 variable "vcn01_subnet_app01_cidr_block" {
-  default = "10.0.1.0/24"
+  default = "10.0.10.0/24"
 }
 
 variable "vcn01_subnet_app01_display_name" {
@@ -37,19 +54,21 @@ variable "vcn01_subnet_app01_display_name" {
 }
 
 variable "vcn01_subnet_db01_cidr_block" {
-  default = "10.0.2.0/24"
+  default = "10.0.20.0/24"
 }
 
 variable "vcn01_subnet_db01_display_name" {
   default = "vcn01_subnet_db01"
 }
 
-variable "use_existing_network" {
-  type = bool
-  default = false
+variable "lb_shape" {
+  default = "10Mbps"
 }
 
-# OS Images
+variable "InstanceShape" {
+    default = "VM.Standard2.1"
+}
+
 variable "instance_os" {
   description = "Operating system for compute instances"
   default     = "Oracle Linux"
@@ -57,20 +76,52 @@ variable "instance_os" {
 
 variable "linux_os_version" {
   description = "Operating system version for all Linux instances"
-  default     = "7.8"
+  default     = "7.9"
+}
+variable "ATP_username" {
+  default = "todoapp"
 }
 
-variable "InstanceShape" {
-    default = "VM.Standard2.1"
+variable "ATP_database_cpu_core_count" {
+  default = 1
 }
 
-variable "OsImage" {
-   default = "Oracle-Linux-7.8-2020.05.26-0"
+variable "ATP_database_data_storage_size_in_tbs" {
+  default = 1
 }
-variable "ATP_tde_wallet_zip_file" {default = "tde_wallet_ATPdb1.zip"}
 
-variable "numberOfNodes" {default = 2}
+variable "ATP_database_db_name" {
+  default = "myatp99"
+}
 
-variable "atp_password" {}
-variable "atp_db_name" {}
-variable "atp_name" {} 
+variable "ATP_database_db_version" {
+  default = "19c"
+}
+
+variable "ATP_database_defined_tags_value" {
+  default = ""
+}
+
+variable "ATP_database_display_name" {
+  default = "ATP"
+}
+
+variable "ATP_database_freeform_tags" {
+  default = {
+    "Owner" = "ATP"
+  }
+}
+
+variable "ATP_database_license_model" {
+  default = "LICENSE_INCLUDED"
+}
+
+variable "ATP_tde_wallet_zip_file" {
+  default = "tde_wallet_ATPdb1.zip"
+}
+
+variable "ATP_private_endpoint_label" {
+  default = "ATPPrivateEndpoint"
+}
+
+

@@ -19,3 +19,29 @@ data "oci_core_images" "InstanceImageOCID" {
   }
 }
 
+#Get list of MySQL configuration
+data "oci_mysql_mysql_configurations" "mds_mysql_configurations" {
+    compartment_id = var.compartment_ocid
+
+}
+
+data "oci_core_vnic_attachments" "tomcat-server1_primaryvnic_attach" {
+  availability_domain = var.availablity_domain_name
+  compartment_id      = var.compartment_ocid
+  instance_id         = oci_core_instance.tomcat-server1.id
+}
+
+data "oci_core_vnic" "tomcat-server1_primaryvnic" {
+  vnic_id = data.oci_core_vnic_attachments.tomcat-server1_primaryvnic_attach.vnic_attachments.0.vnic_id
+}
+
+
+data "oci_core_vnic_attachments" "tomcat-server2_primaryvnic_attach" {
+  availability_domain = var.availablity_domain_name
+  compartment_id      = var.compartment_ocid
+  instance_id         = oci_core_instance.tomcat-server2.id
+}
+
+data "oci_core_vnic" "tomcat-server2_primaryvnic" {
+  vnic_id = data.oci_core_vnic_attachments.tomcat-server2_primaryvnic_attach.vnic_attachments.0.vnic_id
+}
