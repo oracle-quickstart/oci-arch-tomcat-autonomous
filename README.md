@@ -2,8 +2,6 @@
 
 Apache Tomcat® is an open source Java application server. It implements the Java Servlet, JavaServer Pages, Java Expression Language and Java WebSocket technologies.
 
-For details of the architecture, see [_Deploy Apache Tomcat connected to an autonomous database_](https://docs.oracle.com/en/solutions/deploy-tomcat-adb)
-
 ## Prerequisites
 
 - Permission to `manage` the following types of resources in your Oracle Cloud Infrastructure tenancy: `vcns`, `internet-gateways`, `route-tables`, `network-security-groups`, `subnets`, `autonomous-database-family`, and `instances`.
@@ -99,4 +97,6 @@ When you no longer need the deployment, you can run this command to destroy the 
 ## Architecture Diagram
 ![](./images/architecture-deploy-tomcat.png)
 
+## Reference Archirecture
 
+For details of the architecture, see [_Deploy Apache Tomcat connected to an autonomous database_](https://docs.oracle.com/en/solutions/deploy-tomcat-adb)
