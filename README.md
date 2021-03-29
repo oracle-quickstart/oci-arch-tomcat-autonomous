@@ -57,15 +57,17 @@ private_key_path     = "<pem_private_key_path>"
 # Region
 region = "<oci_region>"
 
-# Availablity Domain 
-availablity_domain_name = "<availablity_domain_name>"
-
 # Compartment
 compartment_ocid = "<compartment_ocid>"
 
-# ATP Password 
-ATP_password = "<ATP_password>"
+# ATP instance Password 
+atp_password = "<atp_password>"
 
+# Number of Tomcat nodes (optional)
+numberOfNodes = 2
+
+# Customer SSH Public Key (optional)
+ssh_public_key = "<ssh_public_key>"
 ````
 
 ### Create the Resources

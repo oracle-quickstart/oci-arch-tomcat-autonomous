@@ -13,17 +13,20 @@ variableGroups:
   variables:
   - tenancy_ocid
   - region
+  - release
 
 - title: Required Configuration
   visible: true  
   variables:
-  - ATP_password
   - compartment_ocid
-  - availablity_domain_name 
+  - numberOfNodes
+  - atp_password
+  - atp_private_endpoint
 
 - title: Optional Configuration
   visible: true
   variables:
+  - ssh_public_key
   - lb_shape  
   - igw_display_name
   - vcn01_cidr_block
@@ -37,20 +40,20 @@ variableGroups:
   - vcn01_subnet_app01_display_name 
   - vcn01_subnet_db01_cidr_block
   - vcn01_subnet_db01_display_name
-  - ATP_database_cpu_core_count
-  - ATP_database_data_storage_size_in_tbs
-  - ATP_database_db_name
-  - ATP_database_db_version
-  - ATP_database_defined_tags_value
-  - ATP_database_display_name
-  - ATP_database_freeform_tags
-  - ATP_database_license_model
-  - ATP_tde_wallet_zip_file
-  - ATP_private_endpoint_label
+  - atp_cpu_core_count
+  - atp_data_storage_size_in_tbs
+  - atp_db_name
+  - atp_db_version
+  - atp_defined_tags_value
+  - atp_name
+  - atp_username
+  - atp_freeform_tags
+  - atp_license_model
+  - atp_tde_wallet_zip_file
+  - atp_private_endpoint_label
   - InstanceShape
   - instance_os
   - linux_os_version
-  - release
 
 variables:
   
@@ -68,16 +71,7 @@ variables:
     title: Region
     description: "Region where you want to deploy the resources defined by this stack."
 
-  availablity_domain_name:
-    type: oci:identity:availabilitydomain:name
-    required: true
-    visibile: true
-    title: "Availability Domain to be chosen"
-    description: "Availability Domain to be chosen"
-    dependsOn:
-      compartmentId: ${compartment_ocid}
-
-  ATP_password:
+  atp_password:
     type: password
     required: true
     visibile: true
@@ -86,9 +80,33 @@ variables:
     minLength: 12
     maxLength: 30
     pattern: ^[A-Za-z][A-Za-z0-9_#\$]+$ 
+
+  atp_private_endpoint:
+    type: boolean
+    visibile: true
+    default: false
+    required: true
+    title: "ATP Database Private Endpoint"
+    description: "Check the box to deploy ATP Database with Private Endpoint."
+
+  numberOfNodes:
+    type: number
+    required: false
+    minimum: 1
+    maximum: 128
+    multipleOf: 1
+    default: 2
+    title: "How many Tomcat Nodes?"
+    description: "Choose number of Tomcat Nodes to be deployed."
  
   # Optional Configuration  
   
+  ssh_public_key:
+    type: oci:core:ssh:publickey
+    title: "Public SSH Key"
+    description: "Choose public SSH Key to be uploaded into compute instances."
+    required: false
+
   lb_shape:
     type: enum
     title: "LoadBalanacer Shape"
@@ -180,16 +198,18 @@ variables:
     type: string
     required: false
     pattern: "^(25[0-5]|2[0-4][0-9]|1[0-9][0-9]|[1-9]?[0-9]).(25[0-5]|2[0-4][0-9]|1[0-9][0-9]|[1-9]?[0-9]).(25[0-5]|2[0-4][0-9]|1[0-9][0-9]|[1-9]?[0-9]).(25[0-5]|2[0-4][0-9]|1[0-9][0-9]|[1-9]?[0-9])\\/(3[0-2]|[1-2]?[0-9])$"
-    title: "MDS Private Subnet CIDR Block"
-    description: "Choose CIDR block for your MDS Private Subnet."
+    title: "ATP Private Subnet CIDR Block"
+    description: "Choose CIDR block for your ATP Private Subnet."
     default: "10.0.20.0/24"
+    visible: atp_private_endpoint
 
   vcn01_subnet_db01_display_name:
     type: string
     required: false
-    title: "MDS Private Subnet Display Name"
-    description: "Choose Display Name for your MDS Private Subnet."
+    title: "ATP Private Subnet Display Name"
+    description: "Choose Display Name for your ATP Private Subnet."
     default: "vcn01_subnet_db01"
+    visible: atp_private_endpoint
 
   InstanceShape:
     type: oci:core:instanceshape:name
@@ -219,82 +239,91 @@ variables:
       - "7.8"
       - "7.9"
 
-  ATP_database_cpu_core_count:
+  atp_cpu_core_count:
     type: number
     required: false
     minimum: 1
     maximum: 128
     multipleOf: 1
     default: 1
-    description: "ATP Database CPU Core Count"
+    title: "ATP Database CPU Core Count"
+    description: "Choose how many CPU cores will be used for ATP Instance."
 
-  ATP_database_data_storage_size_in_tbs:
+  atp_data_storage_size_in_tbs:
     type: number
     required: false
     minimum: 1
     maximum: 128
     multipleOf: 1
     default: 1
-    description: "ATP Database Data Storage Size in terabytes"
+    title: "ATP Database Data Storage Size"
+    description: "Choose ATP Database Data Storage Size in terabytes."
 
-  ATP_database_db_name:
+  atp_db_name:
     type: string
     required: false
-    default: "atpdb1"
-    description: "ATP Database DBNAME"
+    title: "ATP Database DB Name"
+    description: "Choose ATP Database name."
 
-  ATP_database_db_version:
+  atp_db_version:
     type: enum
     required: false
     default: "19c"
-    description: "ATP Database Version"
+    title: "ATP Database Version"
+    description: "Choose ATP Database version."
     enum:
       - "19c"
 
-  ATP_database_display_name:
+  atp_name:
     type: string
     required: false
-    default: "ATPDB"
-    description: "ATP Database Display Name"
+    title: "ATP Database Display Name"
+    description: "Choose ATP Database display name."
 
-  ATP_database_license_model:
+  atp_username:
+    type: string
+    required: false
+    title: "ATP Database App Username"
+    description: "Choose ATP Database application's username."
+
+  atp_license_model:
     type: enum
     required: false
     default: "LICENSE_INCLUDED"
-    description: "ATP Database License Model"
+    title: "ATP Database License Model"
+    description: "Choose ATP Database license model."
     enum:
       - "LICENSE_INCLUDED"
       - "BRING_YOUR_OWN_LICENSE"
 
-  ATP_tde_wallet_zip_file:
+  atp_tde_wallet_zip_file:
     type: string
     required: false
+    visible: false
     default: "tde_wallet_ATPdb1.zip"
     description: "ATP Database TDE Wallet ZIP File"
       
-  ATP_private_endpoint_label:
+  atp_private_endpoint_label:
     type: string
     required: false
     default: "ATPPrivateEndpoint"
-    description: "ATP Database Private Endpoint Label"
+    title: "ATP Database Private Endpoint Label"
+    description: "Choose ATP Database Private Endpoint label."
+    visible: atp_private_endpoint
 
-  ATP_database_freeform_tags:
+  atp_freeform_tags:
     type: string
     required: false
-    description: "ATP Database Freeform Tags"
+    title: "ATP Database Freeform Tags"
+    description: "Choose ATP Database Freeform Tags."
 
-  ATP_database_defined_tags_value:
+  atp_defined_tags_value:
     type: string
     required: false
-    description: "ATP Database Defined Tags"
+    title: "ATP Database Defined Tags"
+    description: "Choose ATP Database Defined Tags."
 
 outputs:
-
-  generated_ssh_private_key:
-    title: "Generated SSH Private Key"
-    displayText: "Generated SSH Private Key"
-    type: copyableString
-    visible: true
 
   todoapp_url:
     title: "TODO App URL"
@@ -308,14 +337,3 @@ outputs:
     type: string
     visible: true
 
-  tomcat-server1_private_ip:
-    title: "Tomcat Server1 Private IP"
-    displayText: "Tomcat Server1 Private IP"
-    type: string
-    visible: true
-
-  tomcat-server2_private_ip:
-    title: "Tomcat Server2 Private IP"
-    displayText: "Tomcat Server2 Private IP"
-    type: string
-    visible: true

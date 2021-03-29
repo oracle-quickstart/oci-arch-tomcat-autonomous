@@ -3,7 +3,7 @@
 
 variable "release" {
   description = "Reference Architecture Release (OCI Architecture Center)"
-  default     = "1.0"
+  default     = "1.1"
 }
 
 variable "tenancy_ocid" {}
@@ -12,8 +12,11 @@ variable "compartment_ocid" {}
 variable "fingerprint" {}
 variable "user_ocid" {}
 variable "private_key_path" {}
-variable "availablity_domain_name" {}
-variable "ATP_password" {}
+variable "atp_password" {}
+
+variable "ssh_public_key" {
+  default = ""
+}
 
 variable "igw_display_name" {
   default = "internet-gateway"
@@ -78,49 +81,58 @@ variable "linux_os_version" {
   description = "Operating system version for all Linux instances"
   default     = "7.9"
 }
-variable "ATP_username" {
+
+variable "numberOfNodes" {
+  default = 2
+}
+
+variable "atp_private_endpoint" {
+  default = true
+}
+
+variable "atp_username" {
   default = "todoapp"
 }
 
-variable "ATP_database_cpu_core_count" {
+variable "atp_cpu_core_count" {
   default = 1
 }
 
-variable "ATP_database_data_storage_size_in_tbs" {
+variable "atp_data_storage_size_in_tbs" {
   default = 1
 }
 
-variable "ATP_database_db_name" {
-  default = "myatp99"
+variable "atp_db_name" {
+  default = "ATPDB"
 }
 
-variable "ATP_database_db_version" {
+variable "atp_db_version" {
   default = "19c"
 }
 
-variable "ATP_database_defined_tags_value" {
+variable "atp_defined_tags_value" {
   default = ""
 }
 
-variable "ATP_database_display_name" {
-  default = "ATP"
+variable "atp_name" {
+  default = "TomcatATP"
 }
 
-variable "ATP_database_freeform_tags" {
+variable "atp_freeform_tags" {
   default = {
     "Owner" = "ATP"
   }
 }
 
-variable "ATP_database_license_model" {
+variable "atp_license_model" {
   default = "LICENSE_INCLUDED"
 }
 
-variable "ATP_tde_wallet_zip_file" {
+variable "atp_tde_wallet_zip_file" {
   default = "tde_wallet_ATPdb1.zip"
 }
 
-variable "ATP_private_endpoint_label" {
+variable "atp_private_endpoint_label" {
   default = "ATPPrivateEndpoint"
 }
 
