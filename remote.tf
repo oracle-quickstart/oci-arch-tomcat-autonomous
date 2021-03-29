@@ -3,15 +3,15 @@ resource "null_resource" "tomcat-server-config" {
   count = var.numberOfNodes
 
   provisioner "local-exec" {
-    command = "echo '${oci_database_autonomous_database_wallet.atp_wallet.content}' >> ${var.atp_tde_wallet_zip_file}_encoded"
+    command = "echo '${oci_database_autonomous_database_wallet.atp_wallet.content}' >> ${var.atp_tde_wallet_zip_file}_encoded-${count.index}"
   }
 
   provisioner "local-exec" {
-    command = "base64 --decode ${var.atp_tde_wallet_zip_file}_encoded > ${var.atp_tde_wallet_zip_file}"
+    command = "base64 --decode ${var.atp_tde_wallet_zip_file}_encoded-${count.index} > ${var.atp_tde_wallet_zip_file}-${count.index}"
   }
 
   provisioner "local-exec" {
-    command = "rm -rf ${var.atp_tde_wallet_zip_file}_encoded"
+    command = "rm -rf ${var.atp_tde_wallet_zip_file}_encoded-${count.index}"
   }
 
   provisioner "file" {
@@ -28,8 +28,12 @@ resource "null_resource" "tomcat-server-config" {
       bastion_user = "opc"
       bastion_private_key = tls_private_key.public_private_key_pair.private_key_pem
     }
-    source      = var.atp_tde_wallet_zip_file
+    source      = "${var.atp_tde_wallet_zip_file}-${count.index}"
     destination = "/tmp/${var.atp_tde_wallet_zip_file}"
+  }
+
+  provisioner "local-exec" {
+    command = "rm -rf ${var.atp_tde_wallet_zip_file}-${count.index}"
   }
 
   provisioner "file" {
