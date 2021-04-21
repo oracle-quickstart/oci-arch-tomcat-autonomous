@@ -3,15 +3,15 @@
 
 variable "release" {
   description = "Reference Architecture Release (OCI Architecture Center)"
-  default     = "1.1"
+  default     = "1.2"
 }
 
 variable "tenancy_ocid" {}
 variable "region" {}
 variable "compartment_ocid" {}
-#variable "fingerprint" {}
-#variable "user_ocid" {}
-#variable "private_key_path" {}
+variable "fingerprint" {}
+variable "user_ocid" {}
+variable "private_key_path" {}
 variable "atp_password" {}
 
 variable "ssh_public_key" {
@@ -65,11 +65,27 @@ variable "vcn01_subnet_db01_display_name" {
 }
 
 variable "lb_shape" {
-  default = "10Mbps"
+  default = "flexible"
+}
+
+variable "flex_lb_min_shape" {
+  default = "10"
+}
+
+variable "flex_lb_max_shape" {
+  default = "100"
 }
 
 variable "InstanceShape" {
-    default = "VM.Standard2.1"
+   default = "VM.Standard.E3.Flex"
+}
+
+variable "InstanceFlexShapeOCPUS" {
+    default = 1
+}
+
+variable "InstanceFlexShapeMemory" {
+    default = 10
 }
 
 variable "instance_os" {

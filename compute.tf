@@ -41,11 +41,33 @@ data "template_cloudinit_config" "cloud_init" {
   }
 }
 
+# Dictionary Locals
+locals {
+  compute_flexible_shapes = [
+    "VM.Standard.E3.Flex",
+    "VM.Standard.E4.Flex"
+  ]
+}
+
+# Checks if is using Flexible Compute Shapes
+locals {
+  is_flexible_node_shape = contains(local.compute_flexible_shapes, var.InstanceShape)
+}
+
+
 resource "oci_core_instance" "bastion_instance" {
   availability_domain = data.oci_identity_availability_domains.ADs.availability_domains[0]["name"]
   compartment_id      = var.compartment_ocid
   display_name        = "BastionVM"
   shape               = var.InstanceShape
+
+  dynamic "shape_config" {
+    for_each = local.is_flexible_node_shape ? [1] : []
+    content {
+      memory_in_gbs = var.InstanceFlexShapeMemory
+      ocpus = var.InstanceFlexShapeOCPUS
+    }
+  }
 
   create_vnic_details {
     subnet_id = oci_core_subnet.vcn01_subnet_pub02.id
@@ -74,6 +96,15 @@ resource "oci_core_instance" "tomcat-server" {
   compartment_id      = var.compartment_ocid
   display_name        = "tomcat-server-${count.index}"
   shape               = var.InstanceShape
+
+  dynamic "shape_config" {
+    for_each = local.is_flexible_node_shape ? [1] : []
+    content {
+      memory_in_gbs = var.InstanceFlexShapeMemory
+      ocpus = var.InstanceFlexShapeOCPUS
+    }
+  }
+  
   fault_domain        = "FAULT-DOMAIN-${(count.index%3)+1}"
 
   create_vnic_details {

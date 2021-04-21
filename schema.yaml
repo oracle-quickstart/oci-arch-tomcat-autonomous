@@ -21,13 +21,34 @@ variableGroups:
   - compartment_ocid
   - numberOfNodes
   - atp_password
-  - atp_private_endpoint
+  - show_advanced
 
-- title: Optional Configuration
-  visible: true
+- title: Load Balancer Configuration
+  visible: 
+      and:
+        - show_advanced
+  variables:
+  - lb_shape 
+  - flex_lb_min_shape
+  - flex_lb_max_shape 
+
+- title: Compute Instances Configuration
+  visible: 
+      and:
+        - show_advanced
   variables:
   - ssh_public_key
-  - lb_shape  
+  - InstanceShape
+  - InstanceFlexShapeOCPUS
+  - InstanceFlexShapeMemory
+  - instance_os
+  - linux_os_version
+
+- title: Networking Optional Configuration
+  visible: 
+      and:
+        - show_advanced
+  variables:
   - igw_display_name
   - vcn01_cidr_block
   - vcn01_dns_label
@@ -40,6 +61,13 @@ variableGroups:
   - vcn01_subnet_app01_display_name 
   - vcn01_subnet_db01_cidr_block
   - vcn01_subnet_db01_display_name
+
+- title: ATP Optional Configuration
+  visible: 
+      and:
+        - show_advanced
+  variables:
+  - atp_private_endpoint
   - atp_cpu_core_count
   - atp_data_storage_size_in_tbs
   - atp_db_name
@@ -51,11 +79,15 @@ variableGroups:
   - atp_license_model
   - atp_tde_wallet_zip_file
   - atp_private_endpoint_label
-  - InstanceShape
-  - instance_os
-  - linux_os_version
 
 variables:
+
+  show_advanced:
+    type: boolean
+    title: "Show advanced options?"
+    description: "Shows advanced options."
+    visible: true
+    default: false
   
   compartment_ocid:
     type: oci:identity:compartment:id
@@ -81,14 +113,6 @@ variables:
     maxLength: 30
     pattern: ^[A-Za-z][A-Za-z0-9_#\$]+$ 
 
-  atp_private_endpoint:
-    type: boolean
-    visibile: true
-    default: false
-    required: true
-    title: "ATP Database Private Endpoint"
-    description: "Check the box to deploy ATP Database with Private Endpoint."
-
   numberOfNodes:
     type: number
     required: false
@@ -111,14 +135,51 @@ variables:
     type: enum
     title: "LoadBalanacer Shape"
     description: "Choose LoadBalanacer Shape"
-    default: "100Mbps"
+    default: "flexible"
     required: false 
     enum:
+      - "flexible"
       - "100Mbps"
       - "10Mbps"
       - "10Mbps-Micro"
       - "400Mbps"
       - "8000Mbps"
+
+  flex_lb_min_shape:
+    type: enum
+    required: false
+    default: "10"
+    title: "LB Flex Min Shape"
+    description: "Choose Minimum Shape for Flex Load Balancer."
+    enum:
+      - "10"
+      - "100"
+      - "1000"
+      - "400"
+      - "8000"
+    visible:
+      and:
+        - eq:
+          - lb_shape 
+          - "flexible"
+
+  flex_lb_max_shape:
+    type: enum
+    required: false
+    default: "100"
+    title: "LB Flex Max Shape"
+    description: "Choose Maximum Shape for Flex Load Balancer."
+    enum:
+      - "10"
+      - "100"
+      - "1000"
+      - "400"
+      - "8000"
+    visible:
+      and:
+        - eq:
+          - lb_shape 
+          - "flexible"
 
   igw_display_name:
     type: string
@@ -216,9 +277,47 @@ variables:
     required: false
     title: "Instance Shape"
     description: "A shape is a template that determines the number of CPUs, amount of memory, and other resources allocated to a newly created instance."
-    default: "VM.Standard2.1"
+    default: "VM.Standard.E3.Flex"
     dependsOn:
       compartmentId: ${compartment_ocid}
+
+  InstanceFlexShapeOCPUS:
+    type: number
+    required: false
+    minimum: 1
+    maximum: 128
+    multipleOf: 1
+    default: 1
+    title: "Flex Shape OCPUs"
+    description: "Choose number of OCPUs for Flex Shape."
+    visible:
+      and:
+        - or:
+          - eq:
+            - InstanceShape 
+            - "VM.Standard.E3.Flex"
+          - eq:
+            - InstanceShape 
+            - "VM.Standard.E4.Flex"
+
+  InstanceFlexShapeMemory:
+    type: number
+    required: false
+    minimum: 1
+    maximum: 128
+    multipleOf: 1
+    default: 10
+    title: "Flex Shape Memory (GB)"
+    description: "Choose number GB for Flex Shape Memory."
+    visible:
+      and:
+        - or:
+          - eq:
+            - InstanceShape 
+            - "VM.Standard.E3.Flex"
+          - eq:
+            - InstanceShape 
+            - "VM.Standard.E4.Flex"
   
   instance_os:
     type: enum
@@ -234,10 +333,18 @@ variables:
     required: false
     title: "Instance OS version"
     description: "An Operating System version that determines the operating system version for the instance."
-    default: "7.8"
+    default: "7.9"
     enum:
       - "7.8"
       - "7.9"
+
+  atp_private_endpoint:
+    type: boolean
+    visibile: true
+    default: false
+    required: true
+    title: "ATP Database Private Endpoint"
+    description: "Check the box to deploy ATP Database with Private Endpoint."
 
   atp_cpu_core_count:
     type: number
@@ -306,10 +413,12 @@ variables:
   atp_private_endpoint_label:
     type: string
     required: false
+    visible: 
+      and:
+        - ATP_private_endpoint
     default: "ATPPrivateEndpoint"
     title: "ATP Database Private Endpoint Label"
     description: "Choose ATP Database Private Endpoint label."
-    visible: atp_private_endpoint
 
   atp_freeform_tags:
     type: string
