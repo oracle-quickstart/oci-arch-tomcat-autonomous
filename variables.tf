@@ -9,9 +9,9 @@ variable "release" {
 variable "tenancy_ocid" {}
 variable "region" {}
 variable "compartment_ocid" {}
-variable "fingerprint" {}
-variable "user_ocid" {}
-variable "private_key_path" {}
+#variable "fingerprint" {}
+#variable "user_ocid" {}
+#variable "private_key_path" {}
 variable "atp_password" {}
 
 variable "ssh_public_key" {
