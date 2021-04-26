@@ -21,6 +21,7 @@ variableGroups:
   - compartment_ocid
   - numberOfNodes
   - atp_password
+  - atp_private_endpoint
   - show_advanced
 
 - title: Load Balancer Configuration
@@ -67,7 +68,6 @@ variableGroups:
       and:
         - show_advanced
   variables:
-  - atp_private_endpoint
   - atp_cpu_core_count
   - atp_data_storage_size_in_tbs
   - atp_db_name
