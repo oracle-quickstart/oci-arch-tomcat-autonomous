@@ -133,8 +133,8 @@ variables:
 
   lb_shape:
     type: enum
-    title: "LoadBalanacer Shape"
-    description: "Choose LoadBalanacer Shape"
+    title: "LoadBalancer Shape"
+    description: "Choose LoadBalancer Shape"
     default: "flexible"
     required: false 
     enum:
