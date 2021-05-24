@@ -3,7 +3,7 @@
 
 variable "release" {
   description = "Reference Architecture Release (OCI Architecture Center)"
-  default     = "1.2"
+  default     = "1.3"
 }
 
 variable "tenancy_ocid" {}
@@ -77,7 +77,7 @@ variable "flex_lb_max_shape" {
 }
 
 variable "InstanceShape" {
-   default = "VM.Standard.E3.Flex"
+   default = "VM.Standard.A1.Flex"
 }
 
 variable "InstanceFlexShapeOCPUS" {
