@@ -1,8 +1,8 @@
 ## Copyright © 2020, Oracle and/or its affiliates. 
 ## All rights reserved. The Universal Permissive License (UPL), Version 1.0 as shown at http://oss.oracle.com/licenses/upl
 
-title: "Create highly available Tomcat setup with web application accessing ATP instance in Oracle Cloud Infrastructure"
-stackDescription: "Deploy highly available Tomcat setup with web application accessing Autonomous Transaction Processing (ATP) instance in Oracle Cloud Infrastructure."
+title: "Create Apache Tomcat on Arm-based Ampere A1 compute connected to an autonomous database in Oracle Cloud Infrastructure,"
+stackDescription: "Deploy Apache Tomcat on Arm-based Ampere A1 compute connected to an autonomous database in Oracle Cloud Infrastructure."
 schemaVersion: 1.1.0
 version: "20190404"
 locale: "en"
@@ -14,14 +14,19 @@ variableGroups:
   - tenancy_ocid
   - region
   - release
+  - oracle_instant_client_version
+  - oracle_instant_client_version_short
 
 - title: Required Configuration
   visible: true  
   variables:
   - compartment_ocid
-  - numberOfNodes
+  - availablity_domain_name
   - atp_password
   - atp_private_endpoint
+  - atp_free_tier
+  - numberOfNodes
+  - tomcat_version
   - show_advanced
 
 - title: Load Balancer Configuration
@@ -96,6 +101,15 @@ variables:
     title: Compartment
     description: "Compartment where you want to create the solution resources"
 
+  availablity_domain_name:
+    type: oci:identity:availabilitydomain:name
+    required: true
+    visibile: true
+    title: "Availability Domain to be chosen"
+    description: "Availability Domain to be chosen"
+    dependsOn:
+      compartmentId: ${compartment_ocid}
+      
   region:
     type: oci:identity:region:name
     required: true
@@ -122,6 +136,17 @@ variables:
     default: 2
     title: "How many Tomcat Nodes?"
     description: "Choose number of Tomcat Nodes to be deployed."
+
+  tomcat_version:
+    type: enum
+    title: "Tomcat Version"
+    description: "Choose Tomcat Version"
+    default: "9.0.45"
+    required: false 
+    enum:
+      - "9.0.45"
+      - "8.5.65"
+      - "7.0.108"
  
   # Optional Configuration  
   
@@ -345,9 +370,9 @@ variables:
     required: false
     title: "Instance OS version"
     description: "An Operating System version that determines the operating system version for the instance."
-    default: "7.9"
+    default: "8"
     enum:
-      - "7.8"
+      - "8"
       - "7.9"
 
   atp_private_endpoint:
@@ -357,6 +382,14 @@ variables:
     required: true
     title: "ATP Database Private Endpoint"
     description: "Check the box to deploy ATP Database with Private Endpoint."
+
+  atp_free_tier:
+    type: boolean
+    visibile: true
+    default: true
+    required: false
+    title: "ATP Database Free Tier"
+    description: "Check the box to deploy ATP Database Free Tier."
 
   atp_cpu_core_count:
     type: number

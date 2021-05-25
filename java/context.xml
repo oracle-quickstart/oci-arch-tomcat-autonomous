@@ -11,7 +11,7 @@
    initialPoolSize="15"
    user="${db_user_name}"
    password="${db_user_password}"
-   url="jdbc:oracle:thin:@${db_name}_medium?TNS_ADMIN=/usr/lib/oracle/18.3/client64/lib/network/admin/"/>
+   url="jdbc:oracle:thin:@${db_name}_medium?TNS_ADMIN=/usr/lib/oracle/${oracle_instant_client_version_short}/client64/lib/network/admin/"/>
 
   <WatchedResource>WEB-INF/web.xml</WatchedResource>
 </Context>

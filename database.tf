@@ -11,6 +11,7 @@ resource "oci_database_autonomous_database" "ATPdatabase" {
   display_name             = var.atp_name
   freeform_tags            = var.atp_freeform_tags
   license_model            = var.atp_license_model
+  is_free_tier             = var.atp_free_tier
   nsg_ids                  = var.atp_private_endpoint ? [oci_core_network_security_group.ATPSecurityGroup.id] : null  
   private_endpoint_label   = var.atp_private_endpoint ? var.atp_private_endpoint_label : null  
   subnet_id                = var.atp_private_endpoint ? oci_core_subnet.vcn01_subnet_db01.id : null

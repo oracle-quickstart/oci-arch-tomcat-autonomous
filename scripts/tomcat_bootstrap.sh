@@ -1,21 +1,30 @@
 #!/bin/bash
 
-# Install Java JDK
+# Install Java JDK & Tomcat
 yum install -y jdk
 
-# Install Tomcat
-yum install -y tomcat
-yum install -y tomcat-webapps 
-yum install -y tomcat-admin-webapps
+useradd tomcat
 
-#I nstall Oracle instant client
-yum -y install oracle-release-el7
-yum-config-manager --enable ol7_oracle_instantclient
-yum -y install oracle-instantclient18.3-basic
-yum -y install oracle-instantclient18.3-sqlplus
+mkdir /u01
+wget -O /u01/apache-tomcat-${tomcat_version}.zip https://archive.apache.org/dist/tomcat/tomcat-${tomcat_major_release}/v${tomcat_version}/bin/apache-tomcat-${tomcat_version}.zip
+unzip /u01/apache-tomcat-${tomcat_version}.zip -d /u01/
+chown -R tomcat:tomcat /u01
+chmod +x /u01/apache-tomcat-${tomcat_version}/bin/*.sh
+
+# Install Oracle instant client
+
+echo '== 1. Install Oracle instant client'
+if [[ $(uname -r | sed 's/^.*\(el[0-9]\+\).*$/\1/') == "el8" ]]
+then 
+  yum install -y https://yum.oracle.com/repo/OracleLinux/OL8/oracle/instantclient/aarch64/getPackage/oracle-instantclient19.10-basic-19.10.0.0.0-1.aarch64.rpm
+  yum install -y https://yum.oracle.com/repo/OracleLinux/OL8/oracle/instantclient/aarch64/getPackage/oracle-instantclient19.10-sqlplus-19.10.0.0.0-1.aarch64.rpm
+else
+  yum install -y https://yum.oracle.com/repo/OracleLinux/OL7/oracle/instantclient/aarch64/getPackage/oracle-instantclient19.10-basic-19.10.0.0.0-1.aarch64.rpm
+  yum install -y https://yum.oracle.com/repo/OracleLinux/OL7/oracle/instantclient/aarch64/getPackage/oracle-instantclient19.10-sqlplus-19.10.0.0.0-1.aarch64.rpm
+fi 
 
 # Prepare TDE wallet 
-unzip -o /tmp/${tde_wallet_zip_file} -d /usr/lib/oracle/18.3/client64/lib/network/admin/
+unzip -o /tmp/${tde_wallet_zip_file} -d /usr/lib/oracle/${oracle_instant_client_version_short}/client64/lib/network/admin/
 
 export tomcat_host='${tomcat_host}'
 
@@ -28,8 +37,8 @@ if [[ $tomcat_host == "tomcat-server-0" ]]; then
 	echo 'GRANT CREATE SEQUENCE TO ${db_user_name};' | sudo tee -a /tmp/create_todoapp_user.sql
 	echo 'GRANT UNLIMITED TABLESPACE TO ${db_user_name};' | sudo tee -a /tmp/create_todoapp_user.sql
 	echo 'exit;' | sudo tee -a /tmp/create_todoapp_user.sql
-	export LD_LIBRARY_PATH=/usr/lib/oracle/18.3/client64/lib
-	/usr/lib/oracle/18.3/client64/bin/sqlplus admin/${db_user_password}@${db_name}_medium @/tmp/create_todoapp_user.sql > /tmp/create_todoapp_user.log
+	export LD_LIBRARY_PATH=/usr/lib/oracle/${oracle_instant_client_version_short}/client64/lib
+	/usr/lib/oracle/${oracle_instant_client_version_short}/client64/bin/sqlplus admin/${db_user_password}@${db_name}_medium @/tmp/create_todoapp_user.sql > /tmp/create_todoapp_user.log
 	cat /tmp/create_todoapp_user.log
 	# Create TODOS table in ATP
 	rm -rf /tmp/create_todos_table.sql
@@ -41,35 +50,39 @@ if [[ $tomcat_host == "tomcat-server-0" ]]; then
 	echo ');' | sudo tee -a /tmp/create_todos_table.sql
 	echo 'SELECT * FROM TODOS;' | sudo tee -a /tmp/create_todos_table.sql
 	echo 'exit;' | sudo tee -a /tmp/create_todos_table.sql
-	export LD_LIBRARY_PATH=/usr/lib/oracle/18.3/client64/lib
-	/usr/lib/oracle/18.3/client64/bin/sqlplus ${db_user_name}/${db_user_password}@${db_name}_medium @/tmp/create_todos_table.sql > /tmp/create_todos_table.log
+	export LD_LIBRARY_PATH=/usr/lib/oracle/${oracle_instant_client_version_short}/client64/lib
+	/usr/lib/oracle/${oracle_instant_client_version_short}/client64/bin/sqlplus ${db_user_name}/${db_user_password}@${db_name}_medium @/tmp/create_todos_table.sql > /tmp/create_todos_table.log
 	cat /tmp/create_todos_table.log
 fi
 
 # Prepare application and Tomcat
-cp /home/opc/context.xml /etc/tomcat/context.xml
-curl https://repo1.maven.org/maven2/com/oracle/database/jdbc/ojdbc8/18.3.0.0/ojdbc8-18.3.0.0.jar -o /home/opc/ojdbc8-18.3.0.0.jar
-curl https://repo1.maven.org/maven2/com/oracle/database/jdbc/ucp/18.3.0.0/ucp-18.3.0.0.jar -o /home/opc/ucp-18.3.0.0.jar
-cp /home/opc/ojdbc8-18.3.0.0.jar /usr/share/tomcat/lib/
-cp /home/opc/ucp-18.3.0.0.jar /usr/share/tomcat/lib/
+cp /home/opc/context.xml /u01/apache-tomcat-${tomcat_version}/conf/context.xml
 
 # Start Tomcat
 setsebool -P tomcat_can_network_connect_db 1
-systemctl start tomcat
-systemctl status tomcat
-systemctl enable tomcat
+chmod +x /u01/apache-tomcat-${tomcat_version}/bin/*.sh
+sudo -u tomcat nohup /u01/apache-tomcat-${tomcat_version}/bin/startup.sh &
+
+# Download TODOAPP and deploy in Tomcat
 wget -O /home/opc/todoapp.war https://github.com/oracle-quickstart/oci-arch-tomcat-autonomous/releases/latest/download/todoapp-atp.war
 chown opc:opc /home/opc/todoapp.war
-cp /home/opc/todoapp.war /usr/share/tomcat/webapps/
+cp /home/opc/todoapp.war /u01/apache-tomcat-${tomcat_version}/webapps
+chown tomcat:tomcat /u01/apache-tomcat-${tomcat_version}/webapps/todoapp.war
 sleep 30
-cp /usr/share/tomcat/lib/ojdbc8-18.3.0.0.jar /usr/share/tomcat/webapps/todoapp/WEB-INF/lib
-cp /usr/share/tomcat/lib/ucp-18.3.0.0.jar /usr/share/tomcat/webapps/todoapp/WEB-INF/lib
-systemctl stop tomcat
-systemctl start tomcat
 
+# Adding Tomcat as systemd service
+cp /home/opc/tomcat.service /etc/systemd/system/
+ls -latr /etc/systemd/system/tomcat.service
+chown root:root /etc/systemd/system/tomcat.service
+cat /etc/systemd/system/tomcat.service
+systemctl daemon-reload
+systemctl enable tomcat
+systemctl start tomcat
+sleep 20
+ps -ef | grep tomcat
+
+# Stop and disable firewalld 
 service firewalld stop
 systemctl disable firewalld
-
-
 
 

@@ -1,0 +1,17 @@
+[Unit]
+Description=Tomcat Service
+
+[Service]
+Type=oneshot
+User=tomcat
+Group=tomcat
+RemainAfterExit=yes
+ExecStart=/usr/bin/echo 'Starting Tomcat Server'
+ExecStart=nohup /u01/apache-tomcat-${tomcat_version}/bin/startup.sh &
+ExecStart=/usr/bin/echo 'Tomcat has been started'
+ExecStop=/usr/bin/echo 'Stopping Tomcat Server'
+ExecStop=nohup /u01/apache-tomcat-${tomcat_version}/bin/shutdown.sh &
+ExecStop=/usr/bin/echo 'Tomcat has been stopped'
+
+[Install]
+WantedBy=multi-user.target

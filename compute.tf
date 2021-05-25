@@ -1,28 +1,6 @@
 ## Copyright © 2020, Oracle and/or its affiliates. 
 ## All rights reserved. The Universal Permissive License (UPL), Version 1.0 as shown at http://oss.oracle.com/licenses/upl
 
-data "template_file" "tomcat_template" {
-  count = var.numberOfNodes
-  
-  template = file("./scripts/tomcat_bootstrap.sh")
-  vars = {
-    db_name              = var.atp_db_name
-    db_user_name         = var.atp_username
-    db_user_password     = var.atp_password
-    tde_wallet_zip_file  = var.atp_tde_wallet_zip_file
-    tomcat_host          = "tomcat-server-${count.index}"
-  }
-}
-
-data "template_file" "tomcat_context_xml" {
-  template = file("./java/context.xml")
-  vars = {
-    db_name              = var.atp_db_name
-    db_user_name         = var.atp_username
-    db_user_password     = var.atp_password
-  }
-}
-
 data "template_file" "key_script" {
   template = file("./scripts/sshkey.tpl")
   vars = {
@@ -56,9 +34,8 @@ locals {
   is_flexible_node_shape = contains(local.compute_flexible_shapes, var.InstanceShape)
 }
 
-
 resource "oci_core_instance" "bastion_instance" {
-  availability_domain = data.oci_identity_availability_domains.ADs.availability_domains[0]["name"]
+  availability_domain = var.availablity_domain_name == "" ? data.oci_identity_availability_domains.ADs.availability_domains[0]["name"] : var.availablity_domain_name
   compartment_id      = var.compartment_ocid
   display_name        = "BastionVM"
   shape               = var.InstanceShape
@@ -94,7 +71,7 @@ resource "oci_core_instance" "bastion_instance" {
 
 resource "oci_core_instance" "tomcat-server" {
   count               = var.numberOfNodes
-  availability_domain = data.oci_identity_availability_domains.ADs.availability_domains[0]["name"]
+  availability_domain = var.availablity_domain_name == "" ? data.oci_identity_availability_domains.ADs.availability_domains[0]["name"] : var.availablity_domain_name
   compartment_id      = var.compartment_ocid
   display_name        = "tomcat-server-${count.index}"
   shape               = var.InstanceShape

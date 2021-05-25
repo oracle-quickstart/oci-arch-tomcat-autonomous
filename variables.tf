@@ -12,6 +12,7 @@ variable "compartment_ocid" {}
 variable "fingerprint" {}
 variable "user_ocid" {}
 variable "private_key_path" {}
+variable "availablity_domain_name" {}
 variable "atp_password" {}
 
 variable "ssh_public_key" {
@@ -102,6 +103,20 @@ variable "numberOfNodes" {
   default = 2
 }
 
+variable "oracle_instant_client_version" {
+#  default     = "21.1"
+   default     = "19.10"
+}
+
+variable "oracle_instant_client_version_short" {
+#  default     = "21"
+  default     = "19.10"
+}
+
+variable "tomcat_version" {
+  default = "9.0.45"
+}
+
 variable "atp_private_endpoint" {
   default = true
 }
@@ -112,6 +127,10 @@ variable "atp_username" {
 
 variable "atp_cpu_core_count" {
   default = 1
+}
+
+variable "atp_free_tier" {
+  default = true
 }
 
 variable "atp_data_storage_size_in_tbs" {

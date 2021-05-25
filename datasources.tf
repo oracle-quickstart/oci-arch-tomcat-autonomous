@@ -23,7 +23,7 @@ data "oci_core_images" "InstanceImageOCID" {
 
 data "oci_core_vnic_attachments" "tomcat-server_primaryvnic_attach" {
   count               = var.numberOfNodes
-  availability_domain = data.oci_identity_availability_domains.ADs.availability_domains[0]["name"]
+  availability_domain = var.availablity_domain_name == "" ? data.oci_identity_availability_domains.ADs.availability_domains[0]["name"] : var.availablity_domain_name
   compartment_id      = var.compartment_ocid
   instance_id         = oci_core_instance.tomcat-server[count.index].id
 }
