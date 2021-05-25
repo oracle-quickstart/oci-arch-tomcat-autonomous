@@ -101,4 +101,4 @@ When you no longer need the deployment, you can run this command to destroy the 
 
 ## Reference Archirecture
 
-For details of the architecture, see [_Deploy Apache Tomcat connected to an autonomous database_](https://docs.oracle.com/en/solutions/deploy-tomcat-adb)
+For details of the architecture, see [_Deploy Apache Tomcat on Arm-based Ampere A1 compute connected to an autonomous database_](https://docs.oracle.com/en/solutions/deploy-tomcat-adb)
