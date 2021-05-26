@@ -24,8 +24,8 @@ then
   	yum install -y https://yum.oracle.com/repo/OracleLinux/OL8/oracle/instantclient/aarch64/getPackage/oracle-instantclient19.10-sqlplus-19.10.0.0.0-1.aarch64.rpm
   else
   	echo '=== 2.1 x86_64 platform & OL8'
-    dnf install -y oracle-instantclient-release-el8
-    dnf install -y oracle-instantclient-basic
+    dnf install -y https://yum.oracle.com/repo/OracleLinux/OL8/oracle/instantclient/x86_64/getPackage/oracle-instantclient19.10-sqlplus-19.10.0.0.0-1.x86_64.rpm
+    dnf install -y https://yum.oracle.com/repo/OracleLinux/OL8/oracle/instantclient/x86_64/getPackage/oracle-instantclient19.10-basic-19.10.0.0.0-1.x86_64.rpm
   fi	
 else
   if [[ $(uname -m | sed 's/^.*\(el[0-9]\+\).*$/\1/') == "aarch64" ]]
@@ -35,8 +35,8 @@ else
     yum install -y https://yum.oracle.com/repo/OracleLinux/OL7/oracle/instantclient/aarch64/getPackage/oracle-instantclient19.10-sqlplus-19.10.0.0.0-1.aarch64.rpm
   else
     echo '=== 2.1 x86_64 platform & OL7'
-    yum install -y oracle-instantclient-release-el7
-    yum install -y oracle-instantclient-basic
+    yum install -y https://yum.oracle.com/repo/OracleLinux/OL7/oracle/instantclient/x86_64/getPackage/oracle-instantclient19.10-basic-19.10.0.0.0-1.x86_64.rpm
+    yum install -y https://yum.oracle.com/repo/OracleLinux/OL7/oracle/instantclient/x86_64/getPackage/oracle-instantclient19.10-sqlplus-19.10.0.0.0-1.x86_64.rpm
   fi
 fi 
 
