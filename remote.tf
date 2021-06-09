@@ -1,6 +1,7 @@
 ## Copyright © 2020, Oracle and/or its affiliates. 
 ## All rights reserved. The Universal Permissive License (UPL), Version 1.0 as shown at http://oss.oracle.com/licenses/upl
 
+
 data "template_file" "tomcat_service_template" {
   count = var.numberOfNodes
   template = file("./scripts/tomcat.service")
@@ -62,9 +63,10 @@ resource "null_resource" "tomcat-server-config" {
       script_path = "/home/opc/myssh.sh"
       agent       = false
       timeout     = "10m"
-      bastion_host = oci_core_instance.bastion_instance.public_ip
+   #   bastion_host = oci_core_instance.bastion_instance.public_ip
+      bastion_host = "host.bastion.${var.region}.oci.oraclecloud.com"
       bastion_port = "22"
-      bastion_user = "opc"
+      bastion_user = oci_bastion_session.ssh_via_bastion_service[count.index].id
       bastion_private_key = tls_private_key.public_private_key_pair.private_key_pem
     }
     source      = "${var.atp_tde_wallet_zip_file}-${count.index}"
@@ -84,9 +86,10 @@ resource "null_resource" "tomcat-server-config" {
       script_path = "/home/opc/myssh.sh"
       agent       = false
       timeout     = "10m"
-      bastion_host = oci_core_instance.bastion_instance.public_ip
+  #    bastion_host = oci_core_instance.bastion_instance.public_ip
+      bastion_host = "host.bastion.${var.region}.oci.oraclecloud.com"
       bastion_port = "22"
-      bastion_user = "opc"
+      bastion_user = oci_bastion_session.ssh_via_bastion_service[count.index].id
       bastion_private_key = tls_private_key.public_private_key_pair.private_key_pem
     }
 
@@ -103,9 +106,10 @@ resource "null_resource" "tomcat-server-config" {
       script_path = "/home/opc/myssh.sh"
       agent       = false
       timeout     = "10m"
-      bastion_host = oci_core_instance.bastion_instance.public_ip
+   #   bastion_host = oci_core_instance.bastion_instance.public_ip
+      bastion_host = "host.bastion.${var.region}.oci.oraclecloud.com"
       bastion_port = "22"
-      bastion_user = "opc"
+      bastion_user = oci_bastion_session.ssh_via_bastion_service[count.index].id
       bastion_private_key = tls_private_key.public_private_key_pair.private_key_pem
     }
 
@@ -122,9 +126,10 @@ resource "null_resource" "tomcat-server-config" {
       script_path = "/home/opc/myssh.sh"
       agent       = false
       timeout     = "10m"
-      bastion_host = oci_core_instance.bastion_instance.public_ip
+    #  bastion_host = oci_core_instance.bastion_instance.public_ip
+      bastion_host = "host.bastion.${var.region}.oci.oraclecloud.com"
       bastion_port = "22"
-      bastion_user = "opc"
+      bastion_user = oci_bastion_session.ssh_via_bastion_service[count.index].id
       bastion_private_key = tls_private_key.public_private_key_pair.private_key_pem
     }
 
@@ -141,9 +146,10 @@ resource "null_resource" "tomcat-server-config" {
       script_path = "/home/opc/myssh.sh"
       agent       = false
       timeout     = "10m"
-      bastion_host = oci_core_instance.bastion_instance.public_ip
+    #  bastion_host = oci_core_instance.bastion_instance.public_ip
+      bastion_host = "host.bastion.${var.region}.oci.oraclecloud.com"
       bastion_port = "22"
-      bastion_user = "opc"
+      bastion_user = oci_bastion_session.ssh_via_bastion_service[count.index].id
       bastion_private_key = tls_private_key.public_private_key_pair.private_key_pem
   
     }
@@ -154,4 +160,5 @@ resource "null_resource" "tomcat-server-config" {
   }
 
 }
+
 

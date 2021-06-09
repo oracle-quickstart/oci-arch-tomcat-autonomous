@@ -34,6 +34,7 @@ locals {
   is_flexible_node_shape = contains(local.compute_flexible_shapes, var.InstanceShape)
 }
 
+/*
 resource "oci_core_instance" "bastion_instance" {
   availability_domain = var.availablity_domain_name == "" ? data.oci_identity_availability_domains.ADs.availability_domains[0]["name"] : var.availablity_domain_name
   compartment_id      = var.compartment_ocid
@@ -69,6 +70,8 @@ resource "oci_core_instance" "bastion_instance" {
   defined_tags = {"${oci_identity_tag_namespace.ArchitectureCenterTagNamespace.name}.${oci_identity_tag.ArchitectureCenterTag.name}" = var.release }
 }
 
+*/
+
 resource "oci_core_instance" "tomcat-server" {
   count               = var.numberOfNodes
   availability_domain = var.availablity_domain_name == "" ? data.oci_identity_availability_domains.ADs.availability_domains[0]["name"] : var.availablity_domain_name
@@ -84,7 +87,17 @@ resource "oci_core_instance" "tomcat-server" {
     }
   }
   
-  #fault_domain        = "FAULT-DOMAIN-${(count.index%3)+1}"
+  fault_domain        = "FAULT-DOMAIN-${(count.index%3)+1}"
+
+  agent_config {
+    are_all_plugins_disabled  = false
+    is_management_disabled    = false
+    is_monitoring_disabled    = false
+    plugins_config  {
+      desired_state = "ENABLED"
+      name          = "Bastion"
+    }
+  }
 
   create_vnic_details {
     subnet_id = oci_core_subnet.vcn01_subnet_app01.id

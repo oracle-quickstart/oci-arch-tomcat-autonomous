@@ -28,7 +28,3 @@ resource "oci_database_autonomous_database_wallet" "atp_wallet" {
   password               = random_password.wallet_password.result
   base64_encode_content  = "true"
 }
-
-output "wallet_password" {
-  value = [random_password.wallet_password.result]
-}
