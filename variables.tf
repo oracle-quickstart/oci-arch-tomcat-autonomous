@@ -3,7 +3,7 @@
 
 variable "release" {
   description = "Reference Architecture Release (OCI Architecture Center)"
-  default     = "1.3"
+  default     = "1.4"
 }
 
 variable "tenancy_ocid" {}
@@ -17,6 +17,10 @@ variable "atp_password" {}
 
 variable "ssh_public_key" {
   default = ""
+}
+
+variable "use_bastion_service" {
+  default = true
 }
 
 variable "igw_display_name" {
@@ -78,15 +82,15 @@ variable "flex_lb_max_shape" {
 }
 
 variable "InstanceShape" {
-   default = "VM.Standard.A1.Flex"
+  default = "VM.Standard.A1.Flex"
 }
 
 variable "InstanceFlexShapeOCPUS" {
-    default = 1
+  default = 1
 }
 
 variable "InstanceFlexShapeMemory" {
-    default = 10
+  default = 10
 }
 
 variable "instance_os" {
@@ -104,13 +108,13 @@ variable "numberOfNodes" {
 }
 
 variable "oracle_instant_client_version" {
-#  default     = "21.1"
-   default     = "19.10"
+  #  default     = "21.1"
+  default = "19.10"
 }
 
 variable "oracle_instant_client_version_short" {
-#  default     = "21"
-  default     = "19.10"
+  #  default     = "21"
+  default = "19.10"
 }
 
 variable "tomcat_version" {

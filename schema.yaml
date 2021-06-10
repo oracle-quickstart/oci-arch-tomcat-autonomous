@@ -27,6 +27,7 @@ variableGroups:
   - atp_free_tier
   - numberOfNodes
   - tomcat_version
+  - use_bastion_service
   - show_advanced
 
 - title: Load Balancer Configuration
@@ -147,6 +148,14 @@ variables:
       - "9.0.45"
       - "8.5.65"
       - "7.0.108"
+
+  use_bastion_service:
+    type: boolean
+    visibile: true
+    default: false
+    required: false
+    title: "Use OCI Bastion Service"
+    description: "Check the box to use OCI Bastion Service instead of Bastion Host VM."
  
   # Optional Configuration  
   

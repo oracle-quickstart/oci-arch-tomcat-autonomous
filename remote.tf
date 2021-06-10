@@ -3,7 +3,7 @@
 
 
 data "template_file" "tomcat_service_template" {
-  count = var.numberOfNodes
+  count    = var.numberOfNodes
   template = file("./scripts/tomcat.service")
 
   vars = {
@@ -13,7 +13,7 @@ data "template_file" "tomcat_service_template" {
 
 data "template_file" "tomcat_template" {
   count = var.numberOfNodes
-  
+
   template = file("./scripts/tomcat_bootstrap.sh")
   vars = {
     db_name                             = var.atp_db_name
@@ -40,7 +40,7 @@ data "template_file" "tomcat_context_xml" {
 
 resource "null_resource" "tomcat-server-config" {
   depends_on = [oci_core_instance.tomcat-server, oci_database_autonomous_database.ATPdatabase]
-  count = var.numberOfNodes
+  count      = var.numberOfNodes
 
   provisioner "local-exec" {
     command = "echo '${oci_database_autonomous_database_wallet.atp_wallet.content}' >> ${var.atp_tde_wallet_zip_file}_encoded-${count.index}"
@@ -56,17 +56,16 @@ resource "null_resource" "tomcat-server-config" {
 
   provisioner "file" {
     connection {
-      type        = "ssh"
-      user        = "opc"
-      host        = data.oci_core_vnic.tomcat-server_primaryvnic[count.index].private_ip_address
-      private_key = tls_private_key.public_private_key_pair.private_key_pem
-      script_path = "/home/opc/myssh.sh"
-      agent       = false
-      timeout     = "10m"
-   #   bastion_host = oci_core_instance.bastion_instance.public_ip
-      bastion_host = "host.bastion.${var.region}.oci.oraclecloud.com"
-      bastion_port = "22"
-      bastion_user = oci_bastion_session.ssh_via_bastion_service[count.index].id
+      type                = "ssh"
+      user                = "opc"
+      host                = data.oci_core_vnic.tomcat-server_primaryvnic[count.index].private_ip_address
+      private_key         = tls_private_key.public_private_key_pair.private_key_pem
+      script_path         = "/home/opc/myssh.sh"
+      agent               = false
+      timeout             = "10m"
+      bastion_host        = var.use_bastion_service ? "host.bastion.${var.region}.oci.oraclecloud.com" : oci_core_instance.bastion_instance[0].public_ip
+      bastion_port        = "22"
+      bastion_user        = var.use_bastion_service ? oci_bastion_session.ssh_via_bastion_service[count.index].id : "opc"
       bastion_private_key = tls_private_key.public_private_key_pair.private_key_pem
     }
     source      = "${var.atp_tde_wallet_zip_file}-${count.index}"
@@ -79,17 +78,16 @@ resource "null_resource" "tomcat-server-config" {
 
   provisioner "file" {
     connection {
-      type        = "ssh"
-      user        = "opc"
-      host        = data.oci_core_vnic.tomcat-server_primaryvnic[count.index].private_ip_address
-      private_key = tls_private_key.public_private_key_pair.private_key_pem
-      script_path = "/home/opc/myssh.sh"
-      agent       = false
-      timeout     = "10m"
-  #    bastion_host = oci_core_instance.bastion_instance.public_ip
-      bastion_host = "host.bastion.${var.region}.oci.oraclecloud.com"
-      bastion_port = "22"
-      bastion_user = oci_bastion_session.ssh_via_bastion_service[count.index].id
+      type                = "ssh"
+      user                = "opc"
+      host                = data.oci_core_vnic.tomcat-server_primaryvnic[count.index].private_ip_address
+      private_key         = tls_private_key.public_private_key_pair.private_key_pem
+      script_path         = "/home/opc/myssh.sh"
+      agent               = false
+      timeout             = "10m"
+      bastion_host        = var.use_bastion_service ? "host.bastion.${var.region}.oci.oraclecloud.com" : oci_core_instance.bastion_instance[0].public_ip
+      bastion_port        = "22"
+      bastion_user        = var.use_bastion_service ? oci_bastion_session.ssh_via_bastion_service[count.index].id : "opc"
       bastion_private_key = tls_private_key.public_private_key_pair.private_key_pem
     }
 
@@ -99,17 +97,16 @@ resource "null_resource" "tomcat-server-config" {
 
   provisioner "file" {
     connection {
-      type        = "ssh"
-      user        = "opc"
-      host        = data.oci_core_vnic.tomcat-server_primaryvnic[count.index].private_ip_address
-      private_key = tls_private_key.public_private_key_pair.private_key_pem
-      script_path = "/home/opc/myssh.sh"
-      agent       = false
-      timeout     = "10m"
-   #   bastion_host = oci_core_instance.bastion_instance.public_ip
-      bastion_host = "host.bastion.${var.region}.oci.oraclecloud.com"
-      bastion_port = "22"
-      bastion_user = oci_bastion_session.ssh_via_bastion_service[count.index].id
+      type                = "ssh"
+      user                = "opc"
+      host                = data.oci_core_vnic.tomcat-server_primaryvnic[count.index].private_ip_address
+      private_key         = tls_private_key.public_private_key_pair.private_key_pem
+      script_path         = "/home/opc/myssh.sh"
+      agent               = false
+      timeout             = "10m"
+      bastion_host        = var.use_bastion_service ? "host.bastion.${var.region}.oci.oraclecloud.com" : oci_core_instance.bastion_instance[0].public_ip
+      bastion_port        = "22"
+      bastion_user        = var.use_bastion_service ? oci_bastion_session.ssh_via_bastion_service[count.index].id : "opc"
       bastion_private_key = tls_private_key.public_private_key_pair.private_key_pem
     }
 
@@ -119,17 +116,16 @@ resource "null_resource" "tomcat-server-config" {
 
   provisioner "file" {
     connection {
-      type        = "ssh"
-      user        = "opc"
-      host        = data.oci_core_vnic.tomcat-server_primaryvnic[count.index].private_ip_address
-      private_key = tls_private_key.public_private_key_pair.private_key_pem
-      script_path = "/home/opc/myssh.sh"
-      agent       = false
-      timeout     = "10m"
-    #  bastion_host = oci_core_instance.bastion_instance.public_ip
-      bastion_host = "host.bastion.${var.region}.oci.oraclecloud.com"
-      bastion_port = "22"
-      bastion_user = oci_bastion_session.ssh_via_bastion_service[count.index].id
+      type                = "ssh"
+      user                = "opc"
+      host                = data.oci_core_vnic.tomcat-server_primaryvnic[count.index].private_ip_address
+      private_key         = tls_private_key.public_private_key_pair.private_key_pem
+      script_path         = "/home/opc/myssh.sh"
+      agent               = false
+      timeout             = "10m"
+      bastion_host        = var.use_bastion_service ? "host.bastion.${var.region}.oci.oraclecloud.com" : oci_core_instance.bastion_instance[0].public_ip
+      bastion_port        = "22"
+      bastion_user        = var.use_bastion_service ? oci_bastion_session.ssh_via_bastion_service[count.index].id : "opc"
       bastion_private_key = tls_private_key.public_private_key_pair.private_key_pem
     }
 
@@ -139,23 +135,22 @@ resource "null_resource" "tomcat-server-config" {
 
   provisioner "remote-exec" {
     connection {
-      type        = "ssh"
-      user        = "opc"
-      host        = data.oci_core_vnic.tomcat-server_primaryvnic[count.index].private_ip_address
-      private_key = tls_private_key.public_private_key_pair.private_key_pem
-      script_path = "/home/opc/myssh.sh"
-      agent       = false
-      timeout     = "10m"
-    #  bastion_host = oci_core_instance.bastion_instance.public_ip
-      bastion_host = "host.bastion.${var.region}.oci.oraclecloud.com"
-      bastion_port = "22"
-      bastion_user = oci_bastion_session.ssh_via_bastion_service[count.index].id
+      type                = "ssh"
+      user                = "opc"
+      host                = data.oci_core_vnic.tomcat-server_primaryvnic[count.index].private_ip_address
+      private_key         = tls_private_key.public_private_key_pair.private_key_pem
+      script_path         = "/home/opc/myssh.sh"
+      agent               = false
+      timeout             = "10m"
+      bastion_host        = var.use_bastion_service ? "host.bastion.${var.region}.oci.oraclecloud.com" : oci_core_instance.bastion_instance[0].public_ip
+      bastion_port        = "22"
+      bastion_user        = var.use_bastion_service ? oci_bastion_session.ssh_via_bastion_service[count.index].id : "opc"
       bastion_private_key = tls_private_key.public_private_key_pair.private_key_pem
-  
+
     }
     inline = [
-     "chmod +x ~/tomcat_bootstrap.sh",
-     "sudo ~/tomcat_bootstrap.sh"
+      "chmod +x ~/tomcat_bootstrap.sh",
+      "sudo ~/tomcat_bootstrap.sh"
     ]
   }
 
