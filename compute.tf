@@ -83,7 +83,7 @@ resource "oci_core_instance" "tomcat-server" {
   }
 
   provisioner "local-exec" {
-    command = "sleep 120"
+    command = "sleep 240"
   }
 
   defined_tags = { "${oci_identity_tag_namespace.ArchitectureCenterTagNamespace.name}.${oci_identity_tag.ArchitectureCenterTag.name}" = var.release }

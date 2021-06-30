@@ -20,7 +20,7 @@ variable "ssh_public_key" {
 }
 
 variable "use_bastion_service" {
-  default = true
+  default = false
 }
 
 variable "igw_display_name" {

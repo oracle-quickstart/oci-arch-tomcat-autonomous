@@ -13,6 +13,15 @@ resource "oci_bastion_bastion" "bastion-service" {
 }
 
 resource "oci_bastion_session" "ssh_via_bastion_service" {
+  depends_on = [oci_core_instance.tomcat-server,
+    oci_core_nat_gateway.vcn01_nat_gateway,
+    oci_core_route_table_attachment.vcn01_subnet_app01_route_table_attachment,
+    oci_core_route_table.vnc01_nat_route_table,
+    oci_core_network_security_group.SSHSecurityGroup,
+    oci_core_network_security_group_security_rule.SSHSecurityEgressGroupRule,
+    oci_core_network_security_group_security_rule.SSHSecurityIngressGroupRules
+  ]
+
   count      = var.use_bastion_service ? var.numberOfNodes : 0
   bastion_id = oci_bastion_bastion.bastion-service[0].id
 
