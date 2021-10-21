@@ -1,4 +1,4 @@
-## Copyright © 2020, Oracle and/or its affiliates. 
+## Copyright © 2021, Oracle and/or its affiliates. 
 ## All rights reserved. The Universal Permissive License (UPL), Version 1.0 as shown at http://oss.oracle.com/licenses/upl
 
 resource "oci_bastion_bastion" "bastion-service" {
@@ -46,7 +46,7 @@ resource "oci_bastion_session" "ssh_via_bastion_service" {
 
 resource "oci_core_instance" "bastion_instance" {
   count               = var.use_bastion_service ? 0 : 1
-  availability_domain = var.availablity_domain_name == "" ? data.oci_identity_availability_domains.ADs.availability_domains[0]["name"] : var.availablity_domain_name
+  availability_domain = var.availablity_domain_name == "" ? data.oci_identity_availability_domains.ADs.availability_domains[var.availablity_domain_number]["name"] : var.availablity_domain_name
   compartment_id      = var.compartment_ocid
   display_name        = "BastionVM"
   shape               = var.InstanceShape

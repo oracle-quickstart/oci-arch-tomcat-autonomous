@@ -1,4 +1,4 @@
-## Copyright © 2020, Oracle and/or its affiliates. 
+## Copyright © 2021, Oracle and/or its affiliates. 
 ## All rights reserved. The Universal Permissive License (UPL), Version 1.0 as shown at http://oss.oracle.com/licenses/upl
 
 title: "Create Apache Tomcat on Arm-based Ampere A1 compute connected to an autonomous database in Oracle Cloud Infrastructure,"
@@ -16,6 +16,7 @@ variableGroups:
   - release
   - oracle_instant_client_version
   - oracle_instant_client_version_short
+  - availablity_domain_number
 
 - title: Required Configuration
   visible: true  
