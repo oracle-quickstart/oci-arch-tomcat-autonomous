@@ -1,4 +1,4 @@
-## Copyright © 2020, Oracle and/or its affiliates. 
+## Copyright © 2021, Oracle and/or its affiliates. 
 ## All rights reserved. The Universal Permissive License (UPL), Version 1.0 as shown at http://oss.oracle.com/licenses/upl
 
 data "template_file" "key_script" {
@@ -36,7 +36,7 @@ locals {
 
 resource "oci_core_instance" "tomcat-server" {
   count               = var.numberOfNodes
-  availability_domain = var.availablity_domain_name == "" ? data.oci_identity_availability_domains.ADs.availability_domains[0]["name"] : var.availablity_domain_name
+  availability_domain = var.availablity_domain_name == "" ? data.oci_identity_availability_domains.ADs.availability_domains[var.availablity_domain_number]["name"] : var.availablity_domain_name
   compartment_id      = var.compartment_ocid
   display_name        = "tomcat-server-${count.index}"
   shape               = var.InstanceShape

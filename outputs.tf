@@ -1,4 +1,4 @@
-## Copyright © 2020, Oracle and/or its affiliates. 
+## Copyright © 2021, Oracle and/or its affiliates. 
 ## All rights reserved. The Universal Permissive License (UPL), Version 1.0 as shown at http://oss.oracle.com/licenses/upl
 
 output "todoapp_url" {
@@ -22,7 +22,3 @@ output "generated_ssh_private_key" {
   sensitive = true
 }
 
-output "wallet_password" {
-  value     = [random_password.wallet_password.result]
-  sensitive = true
-}

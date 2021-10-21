@@ -1,9 +1,9 @@
-## Copyright © 2020, Oracle and/or its affiliates. 
+## Copyright © 2021, Oracle and/or its affiliates. 
 ## All rights reserved. The Universal Permissive License (UPL), Version 1.0 as shown at http://oss.oracle.com/licenses/upl
 
 variable "release" {
   description = "Reference Architecture Release (OCI Architecture Center)"
-  default     = "1.4"
+  default     = "1.5"
 }
 
 variable "tenancy_ocid" {}
@@ -12,7 +12,12 @@ variable "compartment_ocid" {}
 variable "fingerprint" {}
 variable "user_ocid" {}
 variable "private_key_path" {}
-variable "availablity_domain_name" {}
+variable "availablity_domain_name" {
+  default = ""
+}
+variable "availablity_domain_number" {
+  default = 0
+}
 variable "atp_password" {}
 
 variable "ssh_public_key" {
@@ -142,7 +147,7 @@ variable "atp_data_storage_size_in_tbs" {
 }
 
 variable "atp_db_name" {
-  default = "ATPDB"
+  default = "TomcatATP"
 }
 
 variable "atp_db_version" {
@@ -159,7 +164,7 @@ variable "atp_name" {
 
 variable "atp_freeform_tags" {
   default = {
-    "Owner" = "ATP"
+    "Owner" = "TomcatATP"
   }
 }
 
